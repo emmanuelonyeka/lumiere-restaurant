@@ -1321,7 +1321,7 @@ button {
 .menu-note {
     text-align: center;
     margin-top: var(--space-16);
-    padding-top: var(--space-10);
+    padding: var(--space-10) var(--space-4);
     border-top: 1px solid var(--color-border);
 }
 
