@@ -1136,6 +1136,52 @@
             .btn-next { width: 100%; justify-content: center; }
             .btn-back { justify-content: center; }
         }
+
+        .custom-select.drop-up .custom-select-options {
+            top: auto;
+            bottom: calc(100% + var(--space-2));
+            transform: translateY(10px);
+        }
+
+        .custom-select.drop-up.open .custom-select-options {
+            transform: translateY(0);
+        }
+
+        /* Step Loader */
+        .step-loader {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-32) var(--space-6);
+            gap: var(--space-8);
+        }
+
+        .step-loader.visible {
+            display: flex;
+        }
+
+        .step-loader-spinner {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: 1px solid var(--color-border);
+            border-top: 2px solid var(--color-gold);
+            animation: spinLoader 0.8s linear infinite;
+        }
+
+        @keyframes spinLoader {
+            to { transform: rotate(360deg); }
+        }
+
+        .step-loader-text {
+            font-family: var(--font-serif);
+            font-size: var(--text-xl);
+            font-weight: 300;
+            font-style: italic;
+            color: var(--color-text-secondary);
+            letter-spacing: 0.05em;
+        }
     </style>
 </head>
 <body>
@@ -1203,6 +1249,10 @@
     <!-- Booking Section -->
     <section class="booking-section">
         <div class="booking-container">
+            <div class="step-loader" id="stepLoader">
+                <div class="step-loader-spinner"></div>
+                <p class="step-loader-text">Preparing your experience...</p>
+            </div>
 
             <!-- Steps Indicator -->
             <div class="steps-indicator" id="stepsIndicator">
@@ -1679,7 +1729,6 @@
         function nextStep(step) {
             if (!validateStep(step)) return;
 
-            // Update booking data
             if (step === 2) {
                 bookingData.date = document.getElementById('bookingDate').value;
             }
@@ -1688,12 +1737,23 @@
                 bookingData.lastName = document.getElementById('lastName').value;
                 bookingData.email = document.getElementById('email').value;
                 bookingData.phone = document.getElementById('phone').value;
-                bookingData.occasion = document.getElementById('occasion').value;
+                bookingData.occasion = occasionInput.value;
                 bookingData.specialRequests = document.getElementById('specialRequests').value;
                 populateSummary();
             }
 
-            goToStep(step + 1);
+            // Show loader
+            document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+            document.getElementById('stepsIndicator').style.opacity = '0.3';
+            document.getElementById('stepLoader').classList.add('visible');
+
+            const delay = step === 3 ? 2000 : 2000;
+
+            setTimeout(() => {
+                document.getElementById('stepLoader').classList.remove('visible');
+                document.getElementById('stepsIndicator').style.opacity = '1';
+                goToStep(step + 1);
+            }, delay);
         }
 
         function prevStep(step) {
@@ -1827,55 +1887,75 @@
 
         // Submit
         function submitReservation() {
-            // Show success state
+            // Show loader with longer delay
             document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
-            document.getElementById('stepsIndicator').style.display = 'none';
+            document.getElementById('stepsIndicator').style.opacity = '0.3';
             document.getElementById('contactAlternative').style.display = 'none';
-            document.getElementById('successState').classList.add('visible');
+            document.getElementById('stepLoader').querySelector('.step-loader-text').textContent = 'Confirming your reservation...';
+            document.getElementById('stepLoader').classList.add('visible');
 
-            // Populate success details
-            const dateObj = new Date(bookingData.date + 'T00:00:00');
-            const formattedDate = dateObj.toLocaleDateString('en-GB', {
-                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-            });
+            setTimeout(() => {
+                document.getElementById('stepLoader').classList.remove('visible');
+                document.getElementById('stepsIndicator').style.display = 'none';
 
-            const timeObj = bookingData.time.split(':');
-            const hour = parseInt(timeObj[0]);
-            const formattedTime = `${hour > 12 ? hour - 12 : hour}:${timeObj[1]} ${hour >= 12 ? 'PM' : 'AM'}`;
+                // Populate success details
+                const dateObj = new Date(bookingData.date + 'T00:00:00');
+                const formattedDate = dateObj.toLocaleDateString('en-GB', {
+                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                });
 
-            document.getElementById('successDetails').innerHTML = `
-                <div class="success-detail-item">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                    </svg>
-                    <span>${bookingData.experienceLabel}</span>
-                </div>
-                <div class="success-detail-item">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                        <line x1="16" y1="2" x2="16" y2="6"/>
-                        <line x1="8" y1="2" x2="8" y2="6"/>
-                        <line x1="3" y1="10" x2="21" y2="10"/>
-                    </svg>
-                    <span>${formattedDate} at ${formattedTime}</span>
-                </div>
-                <div class="success-detail-item">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                        <circle cx="9" cy="7" r="4"/>
-                    </svg>
-                    <span>${bookingData.party} ${bookingData.party === 1 ? 'Guest' : 'Guests'} — ${bookingData.firstName} ${bookingData.lastName}</span>
-                </div>
-                <div class="success-detail-item">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                        <polyline points="22,6 12,13 2,6"/>
-                    </svg>
-                    <span>Confirmation sent to ${bookingData.email}</span>
-                </div>
-            `;
+                const timeObj = bookingData.time.split(':');
+                const hour = parseInt(timeObj[0]);
+                const formattedTime = `${hour > 12 ? hour - 12 : hour}:${timeObj[1]} ${hour >= 12 ? 'PM' : 'AM'}`;
 
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+                document.getElementById('successDetails').innerHTML = `
+                    <div class="success-detail-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                        </svg>
+                        <span>${bookingData.experienceLabel}</span>
+                    </div>
+                    <div class="success-detail-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        <span>${formattedDate} at ${formattedTime}</span>
+                    </div>
+                    <div class="success-detail-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                        </svg>
+                        <span>${bookingData.party} ${bookingData.party === 1 ? 'Guest' : 'Guests'} — ${bookingData.firstName} ${bookingData.lastName}</span>
+                    </div>
+                    <div class="success-detail-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                        <span>Confirmation sent to ${bookingData.email}</span>
+                    </div>
+                `;
+
+                // Show success
+                document.getElementById('successState').classList.add('visible');
+
+                // Scroll to success title not top of page
+                setTimeout(() => {
+                    const successState = document.getElementById('successState');
+                    const rect = successState.getBoundingClientRect();
+                    const offset = 50; // increase to push it lower, decrease to push it higher
+                    
+                    window.scrollTo({
+                        top: window.pageYOffset + rect.top - offset,
+                        behavior: 'smooth'
+                    });
+                }, 300);
+
+            }, 4500);
         }
 
         function showToast(message) {
@@ -1892,8 +1972,17 @@
         const occasionSelect = document.getElementById('occasionSelect');
         const occasionDisplay = document.getElementById('occasionDisplay');
         const occasionInput = document.getElementById('occasion');
-
         occasionSelect.querySelector('.custom-select-trigger').addEventListener('click', () => {
+            const rect = occasionSelect.getBoundingClientRect();
+            const spaceBelow = window.innerHeight - rect.bottom;
+            const spaceAbove = rect.top;
+
+            if (spaceBelow < 200 && spaceAbove > spaceBelow) {
+                occasionSelect.classList.add('drop-up');
+            } else {
+                occasionSelect.classList.remove('drop-up');
+            }
+
             occasionSelect.classList.toggle('open');
         });
 
