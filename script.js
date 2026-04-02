@@ -133,7 +133,8 @@ function initNavigation() {
     const navbar = document.getElementById('navbar');
     const navToggle = document.getElementById('navToggle');
     const navMenu = document.getElementById('navMenu');
-    const navLinks = document.querySelectorAll('.nav-link');
+    const navLinks = document.querySelectorAll('.nav-link, .nav-cta');
+    let scrollY = 0;
     
     if (!navbar) return;
     
@@ -162,7 +163,6 @@ function initNavigation() {
     
     // Mobile menu toggle
     if (navToggle && navMenu) {
-        let scrollY = 0;
     
         navToggle.addEventListener('click', () => {
             navToggle.classList.toggle('active');
@@ -229,6 +229,27 @@ function initNavigation() {
             });
         }
     }, { passive: true });
+
+    // Reset nav on resize
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            if (window.innerWidth > 1024) {
+                navToggle.classList.remove('active');
+                navMenu.classList.remove('active');
+                document.body.style.overflow = '';
+                document.body.style.position = '';
+                document.body.style.width = '';
+                document.body.style.top = '';
+                document.documentElement.style.scrollBehavior = 'auto';
+                window.scrollTo(0, scrollY);
+                setTimeout(() => {
+                    document.documentElement.style.scrollBehavior = '';
+                }, 0);
+            }
+        }, 150);
+    });
 }
 
 /**
@@ -396,24 +417,33 @@ function triggerHeroAnimations() {
 function initMenuFiltering() {
     const categoryBtns = document.querySelectorAll('.category-btn');
     const menuItems = document.querySelectorAll('.menu-item');
-    
+    const menuHeadings = document.querySelectorAll('.menu-heading');
+
     categoryBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            // Update active button
             categoryBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            
+
             const category = btn.dataset.category;
-            
-            // Filter with staggered animation
+
+            // Handle headings
+            menuHeadings.forEach(heading => {
+                if (category === 'all') {
+                    heading.classList.remove('hidden');
+                } else {
+                    heading.classList.add('hidden');
+                }
+            });
+
+            // Handle items
             menuItems.forEach((item, index) => {
                 const itemCategory = item.dataset.category;
-                
+
                 if (category === 'all' || itemCategory === category) {
                     item.classList.remove('hidden');
                     item.classList.remove('fade-out');
                     item.style.transitionDelay = `${index * 0.05}s`;
-                    
+
                     setTimeout(() => {
                         item.style.opacity = '1';
                         item.style.transform = 'translateY(0)';
@@ -422,7 +452,7 @@ function initMenuFiltering() {
                     item.classList.add('fade-out');
                     item.style.opacity = '0';
                     item.style.transform = 'translateY(30px)';
-                    
+
                     setTimeout(() => {
                         item.classList.add('hidden');
                     }, 500);
@@ -449,8 +479,9 @@ function initSmoothScroll() {
             if (target) {
                 e.preventDefault();
                 
-                const navHeight = document.getElementById('navbar')?.offsetHeight || 0;
-                const targetPosition = target.offsetTop - navHeight - 30;
+                const navbar = document.getElementById('navbar');
+                const navHeight = navbar ? navbar.getBoundingClientRect().height : 0;
+                const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight - -10;
                 
                 // Smooth scroll with custom easing
                 const startPosition = window.pageYOffset;
