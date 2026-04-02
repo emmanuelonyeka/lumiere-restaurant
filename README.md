@@ -21,8 +21,8 @@ https://emmanuelonyeka.github.io/lumiere-restaurant
 ## Pages
 - Home
 - Reservation
-- Legal
+- Legal Policy & Terms of Service
 
 ## Author
-Emmanuel Onyeka
+Emmanuel Onyekachi
 Frontend Developer
