@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initParallaxEffect();
     initTextReveal();
     initHeroAnimations();
+    initGalleryTap();
 });
 
 /**
@@ -310,7 +311,12 @@ function initScrollAnimations() {
                 if (parent) {
                     const siblings = Array.from(parent.children);
                     const index = siblings.indexOf(entry.target);
-                    entry.target.style.transitionDelay = `${index * 0.08}s`;
+                    // Only stagger non-menu items
+                    if (!entry.target.classList.contains('menu-item')) {
+                        entry.target.style.transitionDelay = `${index * 0.08}s`;
+                    } else {
+                        entry.target.style.transitionDelay = '0s';
+                    }
                 }
                 
                 observer.unobserve(entry.target);
@@ -674,6 +680,33 @@ function initLazyLoading() {
 }
 
 document.addEventListener('DOMContentLoaded', initLazyLoading);
+
+// Gallery tap effect for mobile
+function initGalleryTap() {
+    if (!window.matchMedia('(pointer: coarse)').matches) return;
+
+    const galleryItems = document.querySelectorAll('.gallery-item');
+
+    galleryItems.forEach(item => {
+        item.addEventListener('touchstart', () => {
+            // Close any other open items first
+            galleryItems.forEach(other => {
+                if (other !== item) {
+                    other.classList.remove('tapped');
+                }
+            });
+            // Show this item
+            item.classList.add('tapped');
+        }, { passive: true });
+
+        item.addEventListener('touchend', () => {
+            // Small delay before hiding so user sees it
+            setTimeout(() => {
+                item.classList.remove('tapped');
+            }, 800);
+        }, { passive: true });
+    });
+}
 
 /**
  * ========================================

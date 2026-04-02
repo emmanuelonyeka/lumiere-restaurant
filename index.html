@@ -36,7 +36,7 @@
                 <li><a href="#menu" class="nav-link">Menu</a></li>
                 <li><a href="#experience" class="nav-link">Experience</a></li>
                 <li><a href="#gallery" class="nav-link">Gallery</a></li>
-                <li><a href="#reservation" class="nav-cta">Reserve</a></li>
+                <li><a href="reservation.html" class="nav-cta">Reserve</a></li>
             </ul>
             
             <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
@@ -564,7 +564,7 @@
                         <span class="price-label">Starting from</span>
                         <span class="price-value">$385 per person</span>
                     </div>
-                    <a href="#reservation" class="magnetic-btn">
+                    <a href="reservation.html" class="magnetic-btn">
                         <span>Reserve Experience</span>
                     </a>
                 </div>
@@ -585,7 +585,7 @@
             </div>
             
             <div class="experience-grid">
-                <div class="experience-card">
+                <a href="reservation.html?experience=tasting" class="experience-card">
                     <div class="experience-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
@@ -596,9 +596,10 @@
                         A 12-course journey through the finest flavors, crafted with seasonal ingredients and artistic presentation.
                     </p>
                     <span class="experience-price">From $385</span>
-                </div>
+                    <span class="exp-reserve-btn">Reserve Experience</span>
+                </a>
                 
-                <div class="experience-card featured">
+                <a href="reservation.html?experience=wine" class="experience-card featured">
                     <div class="experience-badge">Most Popular</div>
                     <div class="experience-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -610,9 +611,10 @@
                         Each course paired with exceptional wines from our 5,000-bottle cellar, guided by our sommelier.
                     </p>
                     <span class="experience-price">From $195</span>
-                </div>
+                    <span class="exp-reserve-btn">Reserve Experience</span>
+                </a>
                 
-                <div class="experience-card">
+                <a href="reservation.html?experience=private" class="experience-card">
                     <div class="experience-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -625,7 +627,8 @@
                         Exclusive use of our private dining room for up to 20 guests, with a customized menu and dedicated service.
                     </p>
                     <span class="experience-price">From $2,500</span>
-                </div>
+                    <span class="exp-reserve-btn">Enquire Now</span>
+                </a>
             </div>
         </div>
     </section>
@@ -788,6 +791,11 @@
                                     <polyline points="22,6 12,13 2,6"/>
                                 </svg>
                                 <span>reservations@lumiere.com</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="reservation.html" class="magnetic-btn book-now">
+                                <span>Book Online</span>
                             </a>
                         </li>
                     </ul>
