@@ -1747,13 +1747,17 @@
             document.getElementById('stepsIndicator').style.opacity = '0.3';
             document.getElementById('stepLoader').classList.add('visible');
 
-            const delay = step === 3 ? 2000 : 2000;
+            // Scroll to loader immediately
+            document.getElementById('stepLoader').scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
 
             setTimeout(() => {
                 document.getElementById('stepLoader').classList.remove('visible');
                 document.getElementById('stepsIndicator').style.opacity = '1';
                 goToStep(step + 1);
-            }, delay);
+            }, 2000);
         }
 
         function prevStep(step) {
@@ -1894,6 +1898,12 @@
             document.getElementById('stepLoader').querySelector('.step-loader-text').textContent = 'Confirming your reservation...';
             document.getElementById('stepLoader').classList.add('visible');
 
+            // Scroll to loader immediately
+            document.getElementById('stepLoader').scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+
             setTimeout(() => {
                 document.getElementById('stepLoader').classList.remove('visible');
                 document.getElementById('stepsIndicator').style.display = 'none';
@@ -1947,7 +1957,7 @@
                 setTimeout(() => {
                     const successState = document.getElementById('successState');
                     const rect = successState.getBoundingClientRect();
-                    const offset = 50; // increase to push it lower, decrease to push it higher
+                    const offset = 30; // increase to push it lower, decrease to push it higher
                     
                     window.scrollTo({
                         top: window.pageYOffset + rect.top - offset,
