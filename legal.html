@@ -3,9 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Legal | Lumière Fine Dining</title>
-    <meta name="description" content="Privacy Policy and Terms of Service for Lumière Fine Dining Restaurant.">
-    
+    <title>Privacy & Terms | Lumière Fine Dining</title>
+    <meta name="description" content="Privacy Policy and Terms of Service for Lumière Fine Dining Restaurant. Learn how we protect your data and the terms governing your visit.">
+    <meta name="robots" content="noindex, follow">
+    <link rel="canonical" href="https://www.lumiere-restaurant.com/legal.html">
+
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="favicon.svg">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.lumiere-restaurant.com/legal.html">
+    <meta property="og:title" content="Privacy & Terms | Lumière Fine Dining">
+    <meta property="og:description" content="Privacy Policy and Terms of Service for Lumière Fine Dining Restaurant.">
+    <meta property="og:image" content="https://www.lumiere-restaurant.com/images/hero-bg.jpg">
+    <meta property="og:site_name" content="Lumière Fine Dining">
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -744,35 +758,6 @@
         });
         
         // Tab Switching
-        function initLegalTabs() {
-            const tabs = document.querySelectorAll('.legal-tab');
-            const sections = document.querySelectorAll('.legal-section');
-            
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const targetId = tab.dataset.tab;
-                    
-                    // Update active tab
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    
-                    // Show target section
-                    sections.forEach(section => {
-                        section.classList.remove('active');
-                        if (section.id === targetId) {
-                            section.classList.add('active');
-                        }
-                    });
-                    
-                    // Scroll to content
-                    const legalContent = document.querySelector('.legal-content');
-                    if (legalContent) {
-                        legalContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                });
-            });
-        }
-
         function initLegalTabs() {
             const tabs = document.querySelectorAll('.legal-tab');
             const sections = document.querySelectorAll('.legal-section');

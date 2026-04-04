@@ -6,8 +6,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize modules in order
     initPageLoader();
-    initCustomCursor();
     initNavigation();
+    initChefSignature();
     initMagneticButtons();
     initScrollAnimations();
     initMenuFiltering();
@@ -46,83 +46,32 @@ function initPageLoader() {
 
 /**
  * ========================================
- * CUSTOM CURSOR
+ * CHEF SIGNATURE DRAW ANIMATION
+ * Adds .sig-active to .chef-showcase when
+ * it enters the viewport, triggering the
+ * SVG stroke-dashoffset animation.
  * ========================================
  */
-function initCustomCursor() {
-    // Skip on touch devices
-    if (window.matchMedia('(pointer: coarse)').matches) return;
-    
-    const cursor = document.createElement('div');
-    cursor.className = 'custom-cursor';
-    document.body.appendChild(cursor);
-    
-    const cursorDot = document.createElement('div');
-    cursorDot.className = 'custom-cursor-dot';
-    document.body.appendChild(cursorDot);
-    
-    let mouseX = 0, mouseY = 0;
-    let cursorX = 0, cursorY = 0;
-    let dotX = 0, dotY = 0;
-    let isActive = true;
-    let inactivityTimeout;
-    
-    document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-        
-        // Reset inactivity
-        isActive = true;
-        clearTimeout(inactivityTimeout);
-        inactivityTimeout = setTimeout(() => {
-            isActive = false;
-        }, 100);
-    });
-    
-    // Smooth cursor animation
-    function animateCursor() {
-        if (isActive) {
-            // Cursor ring follows with delay
-            cursorX += (mouseX - cursorX) * 0.15;
-            cursorY += (mouseY - cursorY) * 0.15;
-            cursor.style.left = cursorX + 'px';
-            cursor.style.top = cursorY + 'px';
-            
-            // Dot follows closely
-            dotX += (mouseX - dotX) * 0.35;
-            dotY += (mouseY - dotY) * 0.35;
-            cursorDot.style.left = dotX + 'px';
-            cursorDot.style.top = dotY + 'px';
-        }
-        
-        requestAnimationFrame(animateCursor);
-    }
-    
-    animateCursor();
-    
-    // Hover effects
-    const hoverElements = document.querySelectorAll('a, button, .menu-card, .gallery-item, .experience-card');
-    
-    hoverElements.forEach(el => {
-        el.addEventListener('mouseenter', () => {
-            cursor.classList.add('hover');
-        });
-        
-        el.addEventListener('mouseleave', () => {
-            cursor.classList.remove('hover');
-        });
-    });
-    
-    // Hide cursor when leaving window
-    document.addEventListener('mouseleave', () => {
-        cursor.style.opacity = '0';
-        cursorDot.style.opacity = '0';
-    });
-    
-    document.addEventListener('mouseenter', () => {
-        cursor.style.opacity = '1';
-        cursorDot.style.opacity = '1';
-    });
+function initChefSignature() {
+    const showcase = document.querySelector('.about');
+    if (!showcase) return;
+
+    // Respect reduced-motion preference — paths are already visible via CSS
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const observer = new IntersectionObserver(
+        (entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    showcase.classList.add('sig-active');
+                    observer.unobserve(showcase);
+                }
+            });
+        },
+        { threshold: 0.25 }
+    );
+
+    observer.observe(showcase);
 }
 
 /**
@@ -524,7 +473,7 @@ function initSmoothScroll() {
  * ========================================
  */
 function initParallaxEffect() {
-    const heroImage = document.querySelector('.hero-image');
+    const heroImage = document.querySelector('.hero-video') || document.querySelector('.hero-image');
     const reservationBg = document.querySelector('.reservation-bg img');
     const aboutImage = document.querySelector('.about-image img');
     

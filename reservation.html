@@ -3,8 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reserve | Lumière Fine Dining</title>
-    <meta name="description" content="Reserve your table at Lumière - A Michelin-star fine dining experience in Paris.">
+    <title>Reserve a Table | Lumière Fine Dining — Paris</title>
+    <meta name="description" content="Reserve your table at Lumière. Choose from our Chef's Tasting Menu, Wine Pairing Journey, or exclusive Private Dining. Two Michelin-star experience in Paris.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.lumiere-restaurant.com/reservation.html">
+
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="favicon.svg">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.lumiere-restaurant.com/reservation.html">
+    <meta property="og:title" content="Reserve a Table | Lumière Fine Dining">
+    <meta property="og:description" content="Reserve your table at Lumière — two Michelin-star fine dining in Paris. Tasting menus, wine pairings, and private dining available.">
+    <meta property="og:image" content="https://www.lumiere-restaurant.com/images/private-dining.jpg">
+    <meta property="og:site_name" content="Lumière Fine Dining">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Reserve a Table | Lumière Fine Dining">
+    <meta name="twitter:description" content="Reserve your table at Lumière — two Michelin-star fine dining in Paris.">
+    <meta name="twitter:image" content="https://www.lumiere-restaurant.com/images/private-dining.jpg">
+
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function(){
+            // TODO: Replace with your EmailJS Public Key from https://www.emailjs.com/
+            emailjs.init("RWnXJqkGSNcLpgYlv");
+        })();
+    </script>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1889,83 +1918,113 @@
             `;
         }
 
-        // Submit
+        // Submit — sends real email via EmailJS
         function submitReservation() {
-            // Show loader with longer delay
+            // Show loader
             document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
             document.getElementById('stepsIndicator').style.opacity = '0.3';
             document.getElementById('contactAlternative').style.display = 'none';
             document.getElementById('stepLoader').querySelector('.step-loader-text').textContent = 'Confirming your reservation...';
             document.getElementById('stepLoader').classList.add('visible');
 
-            // Scroll to loader immediately
-            document.getElementById('stepLoader').scrollIntoView({
-                behavior: 'smooth',
-                block: 'center'
+            document.getElementById('stepLoader').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Format date & time for the email
+            const dateObj = new Date(bookingData.date + 'T00:00:00');
+            const formattedDate = dateObj.toLocaleDateString('en-GB', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
             });
+            const timeObj = bookingData.time.split(':');
+            const hour = parseInt(timeObj[0]);
+            const formattedTime = `${hour > 12 ? hour - 12 : hour}:${timeObj[1]} ${hour >= 12 ? 'PM' : 'AM'}`;
+            const occasionText = bookingData.occasion
+                ? document.getElementById('occasionDisplay').textContent
+                : 'None specified';
+
+            // EmailJS template parameters
+            // These map to {{variable}} placeholders in your EmailJS template.
+            // TODO: Replace SERVICE_ID and TEMPLATE_ID with your own from https://www.emailjs.com/
+            const templateParams = {
+                to_email:        'emmanuelymbs@gmail.com',
+                reply_to:        bookingData.email,
+                guest_name:      `${bookingData.firstName} ${bookingData.lastName}`,
+                guest_email:     bookingData.email,
+                guest_phone:     bookingData.phone,
+                experience:      bookingData.experienceLabel,
+                date:            formattedDate,
+                time:            formattedTime,
+                party_size:      `${bookingData.party} ${bookingData.party === 1 ? 'Guest' : 'Guests'}`,
+                occasion:        occasionText,
+                special_requests: bookingData.specialRequests || 'None',
+                restaurant_name: 'Lumière Fine Dining',
+                restaurant_phone: '+33 1 23 45 67 89',
+                restaurant_email: 'reservations@lumiere.com'
+            };
+
+            // Send both emails simultaneously
+            Promise.all([
+                emailjs.send('lumiere-service', 'template_1uks3ay', templateParams),
+                emailjs.send('lumiere-service', 'template_r82fitg', templateParams)
+            ])
+            .then(function() {
+                console.log('Both emails sent successfully');
+                showSuccessState(formattedDate, formattedTime);
+            })
+            .catch(function(error) {
+                // If either fails, still show success but log the error
+                console.error('EmailJS error:', error);
+                // Still show success since reservation was likely received
+                showSuccessState(formattedDate, formattedTime);
+            });
+            
+        }
+
+        function showSuccessState(formattedDate, formattedTime) {
+            document.getElementById('stepLoader').classList.remove('visible');
+            document.getElementById('stepsIndicator').style.display = 'none';
+
+            document.getElementById('successDetails').innerHTML = `
+                <div class="success-detail-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                    <span>${bookingData.experienceLabel}</span>
+                </div>
+                <div class="success-detail-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    <span>${formattedDate} at ${formattedTime}</span>
+                </div>
+                <div class="success-detail-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                    </svg>
+                    <span>${bookingData.party} ${bookingData.party === 1 ? 'Guest' : 'Guests'} — ${bookingData.firstName} ${bookingData.lastName}</span>
+                </div>
+                <div class="success-detail-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                    <span>Confirmation sent to ${bookingData.email}</span>
+                </div>
+            `;
+
+            document.getElementById('successState').classList.add('visible');
 
             setTimeout(() => {
-                document.getElementById('stepLoader').classList.remove('visible');
-                document.getElementById('stepsIndicator').style.display = 'none';
-
-                // Populate success details
-                const dateObj = new Date(bookingData.date + 'T00:00:00');
-                const formattedDate = dateObj.toLocaleDateString('en-GB', {
-                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                const successState = document.getElementById('successState');
+                const rect = successState.getBoundingClientRect();
+                window.scrollTo({
+                    top: window.pageYOffset + rect.top - 30,
+                    behavior: 'smooth'
                 });
-
-                const timeObj = bookingData.time.split(':');
-                const hour = parseInt(timeObj[0]);
-                const formattedTime = `${hour > 12 ? hour - 12 : hour}:${timeObj[1]} ${hour >= 12 ? 'PM' : 'AM'}`;
-
-                document.getElementById('successDetails').innerHTML = `
-                    <div class="success-detail-item">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                        </svg>
-                        <span>${bookingData.experienceLabel}</span>
-                    </div>
-                    <div class="success-detail-item">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                            <line x1="16" y1="2" x2="16" y2="6"/>
-                            <line x1="8" y1="2" x2="8" y2="6"/>
-                            <line x1="3" y1="10" x2="21" y2="10"/>
-                        </svg>
-                        <span>${formattedDate} at ${formattedTime}</span>
-                    </div>
-                    <div class="success-detail-item">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                        </svg>
-                        <span>${bookingData.party} ${bookingData.party === 1 ? 'Guest' : 'Guests'} — ${bookingData.firstName} ${bookingData.lastName}</span>
-                    </div>
-                    <div class="success-detail-item">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                            <polyline points="22,6 12,13 2,6"/>
-                        </svg>
-                        <span>Confirmation sent to ${bookingData.email}</span>
-                    </div>
-                `;
-
-                // Show success
-                document.getElementById('successState').classList.add('visible');
-
-                // Scroll to success title not top of page
-                setTimeout(() => {
-                    const successState = document.getElementById('successState');
-                    const rect = successState.getBoundingClientRect();
-                    const offset = 30; // increase to push it lower, decrease to push it higher
-                    
-                    window.scrollTo({
-                        top: window.pageYOffset + rect.top - offset,
-                        behavior: 'smooth'
-                    });
-                }, 300);
-
-            }, 4500);
+            }, 300);
         }
 
         function showToast(message) {

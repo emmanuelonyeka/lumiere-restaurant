@@ -3,9 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lumière | Fine Dining Experience</title>
-    <meta name="description" content="Lumière - A Michelin-star fine dining restaurant offering an extraordinary culinary journey.">
-    
+    <title>Lumière | Michelin-Star Fine Dining — Paris</title>
+    <meta name="description" content="Lumière is a two Michelin-star fine dining restaurant in Paris. Experience 12-course tasting menus, award-winning cuisine, and timeless elegance crafted by Executive Chef Antoine Moreau.">
+    <meta name="keywords" content="Lumière restaurant, Michelin star Paris, fine dining Paris, Antoine Moreau chef, tasting menu Paris, luxury restaurant">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.lumiere-restaurant.com/">
+
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="favicon.svg">
+
+    <!-- Open Graph / Social Sharing -->
+    <meta property="og:type" content="restaurant">
+    <meta property="og:url" content="https://www.lumiere-restaurant.com/">
+    <meta property="og:title" content="Lumière | Michelin-Star Fine Dining — Paris">
+    <meta property="og:description" content="Two Michelin stars. Thirty-seven years of culinary excellence. Experience the extraordinary at Lumière, Paris.">
+    <meta property="og:image" content="https://www.lumiere-restaurant.com/images/hero-bg.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="Lumière Fine Dining">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Lumière | Michelin-Star Fine Dining — Paris">
+    <meta name="twitter:description" content="Two Michelin stars. Thirty-seven years of culinary excellence. Experience the extraordinary at Lumière, Paris.">
+    <meta name="twitter:image" content="https://www.lumiere-restaurant.com/images/hero-bg.jpg">
+
+    <!-- Structured Data: Restaurant -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Restaurant",
+      "name": "Lumière",
+      "description": "Two Michelin-star fine dining restaurant in Paris, offering extraordinary tasting menus crafted by Executive Chef Antoine Moreau.",
+      "url": "https://www.lumiere-restaurant.com",
+      "logo": "https://www.lumiere-restaurant.com/favicon.svg",
+      "image": "https://www.lumiere-restaurant.com/images/hero-bg.jpg",
+      "telephone": "+33123456789",
+      "email": "reservations@lumiere.com",
+      "priceRange": "$$$$",
+      "currenciesAccepted": "USD, EUR",
+      "servesCuisine": ["French", "Contemporary", "Fine Dining"],
+      "starRating": {
+        "@type": "Rating",
+        "ratingValue": "2",
+        "bestRating": "3",
+        "ratingExplanation": "Two Michelin Stars"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "42 Avenue des Champs-Élysées",
+        "addressLocality": "Paris",
+        "addressRegion": "Île-de-France",
+        "postalCode": "75008",
+        "addressCountry": "FR"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 48.8698,
+        "longitude": 2.3078
+      },
+      "openingHoursSpecification": [
+        { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Tuesday","Wednesday","Thursday"], "opens": "18:00", "closes": "22:00" },
+        { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Friday","Saturday"], "opens": "18:00", "closes": "23:00" },
+        { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Sunday"], "opens": "12:00", "closes": "21:00" }
+      ],
+      "hasMap": "https://maps.google.com/?q=42+Avenue+des+Champs-Elysees+Paris",
+      "reservations": "https://www.lumiere-restaurant.com/reservation.html",
+      "menu": "https://www.lumiere-restaurant.com/#menu"
+    }
+    </script>
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -105,10 +174,98 @@
                 <div class="about-image-wrapper">
                     <div class="about-image">
                         <img src="images/chef.jpg" alt="Executive Chef Antoine Moreau">
+                        <div class="chef-portrait-accolades">
+                            <div class="portrait-accolade">
+                                <span class="portrait-accolade-value">★★</span>
+                                <span class="portrait-accolade-label">Michelin Stars</span>
+                            </div>
+                            <div class="portrait-accolade-sep"></div>
+                            <div class="portrait-accolade">
+                                <span class="portrait-accolade-value">#11</span>
+                                <span class="portrait-accolade-label">World's 50 Best</span>
+                            </div>
+                            <div class="portrait-accolade-sep"></div>
+                            <div class="portrait-accolade">
+                                <span class="portrait-accolade-value">37</span>
+                                <span class="portrait-accolade-label">Years of Craft</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="about-accent"></div>
                 </div>
+                <div class="chef-editorial">
+                    <div class="chef-editorial-header">
+                        <span class="section-label">The Visionary</span>
+                        <h2 class="chef-editorial-name">Antoine<br>Moreau</h2>
+                        <div class="chef-signature" aria-hidden="true">
+                            <svg viewBox="0 0 400 95" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path class="sig-path"
+                                    d="M 8 74 C 12 70 16 62 22 46 C 28 30 32 16 38 12 C 44 8 48 14 50 24 C 52 34 50 50 48 62 C 46 70 50 76 58 72 C 66 66 70 56 76 54 C 82 52 84 60 80 68 C 76 74 80 76 88 70 C 96 64 100 54 108 52 C 114 50 116 58 114 66 C 112 72 116 74 124 68 C 132 62 134 50 144 50 C 152 50 152 64 148 70 C 144 76 150 78 158 72 C 164 68 166 62 164 64"
+                                    stroke="#C6A769" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path class="sig-path sig-path-delay"
+                                    d="M 184 72 C 184 62 186 44 192 28 C 198 12 202 10 206 20 C 210 30 210 48 212 58 C 214 48 218 30 224 18 C 230 6 234 8 236 20 C 238 32 238 52 238 72"
+                                    stroke="#C6A769" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path class="sig-path sig-path-delay-2"
+                                    d="M 252 60 C 256 50 264 44 272 50 C 280 56 278 68 270 70 C 262 72 258 64 264 58 C 272 50 284 54 290 62 C 296 70 298 58 304 52 C 310 46 316 54 314 64 C 312 72 318 72 326 64 C 334 56 338 48 346 50 C 354 52 354 66 348 72 C 344 76 350 80 360 72 C 370 64 378 54 390 50 C 396 48 400 56 396 68"
+                                    stroke="#C6A769" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path class="sig-path sig-path-delay-2"
+                                    d="M 6 83 C 90 80 220 82 360 78 C 376 77 390 75 398 68"
+                                    stroke="#C6A769" stroke-width="0.5" stroke-linecap="round" opacity="0.35"/>
+                            </svg>
+                        </div>
+                        <p class="chef-editorial-role">Executive Chef &amp; Co-Founder &thinsp;&middot;&thinsp; Lumière, Paris</p>
+                    </div>
+    
+                    <div class="chef-divider">
+                        <span class="chef-divider-line"></span>
+                        <span class="chef-divider-diamond"></span>
+                        <span class="chef-divider-line chef-divider-line--fade"></span>
+                    </div>
+    
+                    <p class="chef-bio">
+                        Born in Lyon and mentored by the legendary Paul Bocuse, Chef Moreau has spent
+                        three decades reimagining the boundaries of French haute cuisine. His guiding
+                        philosophy — ingredient-first, never technique for its own sake — has elevated
+                        Lumière into one of the world's most celebrated tables.
+                    </p>
+    
+                    <div class="chef-michelin-row">
+                        <div class="chef-michelin-stars">
+                            <span class="chef-michelin-star" aria-hidden="true">★</span>
+                            <span class="chef-michelin-star" aria-hidden="true">★</span>
+                        </div>
+                        <div class="chef-michelin-text">
+                            <span class="chef-michelin-title">Michelin Guide · Paris</span>
+                            <span class="chef-michelin-sub">Awarded 2018 &mdash; Retained annually through 2026</span>
+                        </div>
+                    </div>
+    
+                    <ul class="chef-accolades" aria-label="Chef accolades">
+                        <li>
+                            <span class="accolade-year">2024</span>
+                            <span class="accolade-dash"></span>
+                            <span class="accolade-name">World's 50 Best Restaurants &mdash; No.&thinsp;11</span>
+                        </li>
+                        <li>
+                            <span class="accolade-year">2023</span>
+                            <span class="accolade-dash"></span>
+                            <span class="accolade-name">James Beard Award &mdash; Outstanding Chef</span>
+                        </li>
+                        <li>
+                            <span class="accolade-year">2022</span>
+                            <span class="accolade-dash"></span>
+                            <span class="accolade-name">Forbes Travel Guide &mdash; Five Star</span>
+                        </li>
+                        <li>
+                            <span class="accolade-year">2020</span>
+                            <span class="accolade-dash"></span>
+                            <span class="accolade-name">GaultMillau &mdash; Chef of the Year, France</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
+
+            
         </div>
     </section>
 
