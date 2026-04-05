@@ -651,7 +651,7 @@
         .custom-option:hover {
             background: var(--color-gold-muted);
             color: var(--color-gold);
-            padding-left: var(--space-7);
+            padding-left: var(--space-3);
         }
 
         .custom-option.selected {
@@ -1211,6 +1211,205 @@
             color: var(--color-text-secondary);
             letter-spacing: 0.05em;
         }
+
+        /* Phone input wrapper */
+        .phone-input-wrapper {
+            display: flex;
+            gap: 0;
+            align-items: stretch;
+        }
+
+        /* Country code select */
+        .country-code-select {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .country-code-trigger {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-4) var(--space-4);
+            background: var(--color-bg-tertiary);
+            border: 1px solid var(--color-border);
+            border-right: none;
+            border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+            cursor: pointer;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            min-width: 90px;
+            height: 100%;
+            white-space: nowrap;
+        }
+
+        .country-code-select.open .country-code-trigger {
+            border-color: var(--color-gold);
+            box-shadow: 0 0 0 3px var(--color-gold-muted);
+            z-index: 1;
+        }
+
+        .country-flag {
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .country-code-value {
+            font-family: var(--font-sans);
+            font-size: var(--text-sm);
+            font-weight: 500;
+            color: var(--color-text-primary);
+        }
+
+        .country-code-trigger svg {
+            width: 14px;
+            height: 14px;
+            color: var(--color-gold);
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .country-code-select.open .country-code-trigger svg {
+            transform: rotate(180deg);
+        }
+
+        /* Phone number input */
+        .phone-number-input {
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0 !important;
+            flex: 1;
+        }
+
+        .phone-number-input:focus {
+            border-color: var(--color-gold);
+            box-shadow: 0 0 0 3px var(--color-gold-muted);
+            z-index: 1;
+            position: relative;
+        }
+
+        /* Dropdown */
+        .country-code-dropdown {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            width: 220px;
+            background: var(--color-bg-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            z-index: 200;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transform: translateY(-8px);
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+        }
+
+        .country-code-select.open .country-code-dropdown {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+
+        /* Search */
+        .country-search-wrapper {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            border-bottom: 1px solid var(--color-border);
+            background: var(--color-bg-tertiary);
+        }
+
+        .country-search-wrapper svg {
+            width: 14px;
+            height: 14px;
+            color: var(--color-text-muted);
+            flex-shrink: 0;
+        }
+
+        .country-search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-family: var(--font-sans);
+            font-size: var(--text-sm);
+            font-weight: 300;
+            color: var(--color-text-primary);
+            width: 100%;
+        }
+
+        .country-search-input::placeholder {
+            color: var(--color-text-muted);
+        }
+
+        /* Country list */
+        .country-list {
+            max-height: 240px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--color-gold-dark) var(--color-bg-tertiary);
+        }
+
+        .country-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .country-list::-webkit-scrollbar-track {
+            background: var(--color-bg-tertiary);
+        }
+
+        .country-list::-webkit-scrollbar-thumb {
+            background: var(--color-gold-dark);
+            border-radius: 2px;
+        }
+
+        /* Country option */
+        .country-option {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid rgba(198, 167, 105, 0.05);
+        }
+
+        .country-option:last-child {
+            border-bottom: none;
+        }
+
+        .country-option:hover {
+            background: var(--color-gold-muted);
+        }
+
+        .country-option.selected {
+            background: var(--color-gold-muted);
+        }
+
+        .country-option-flag {
+            font-size: 16px;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        .country-option-code {
+            font-family: var(--font-sans);
+            font-size: var(--text-sm);
+            font-weight: 400;
+            color: var(--color-text-secondary);
+        }
+
+        .country-option.selected .country-option-code {
+            color: var(--color-gold);
+        }
+
+        .no-results {
+            padding: var(--space-5) var(--space-4);
+            font-family: var(--font-sans);
+            font-size: var(--text-sm);
+            font-weight: 300;
+            color: var(--color-text-muted);
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -1500,7 +1699,36 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Phone Number <span>*</span></label>
-                        <input type="tel" class="form-input" id="phone" placeholder="+33 1 23 45 67 89">
+                        <div class="phone-input-wrapper">
+                            <!-- Country code dropdown -->
+                            <div class="country-code-select" id="countryCodeSelect">
+                                <div class="country-code-trigger" id="countryCodeTrigger">
+                                    <span class="country-flag" id="selectedFlag">🇫🇷</span>
+                                    <span class="country-code-value" id="selectedCode">+33</span>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M6 9l6 6 6-6"/>
+                                    </svg>
+                                </div>
+                                <div class="country-code-dropdown" id="countryCodeDropdown">
+                                    <div class="country-search-wrapper">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="11" cy="11" r="8"/>
+                                            <path d="M21 21l-4.35-4.35"/>
+                                        </svg>
+                                        <input 
+                                            type="text" 
+                                            class="country-search-input" 
+                                            id="countrySearch" 
+                                            placeholder="Search..."
+                                            autocomplete="off"
+                                        >
+                                    </div>
+                                    <div class="country-list" id="countryList"></div>
+                                </div>
+                            </div>
+                            <!-- Phone number input -->
+                            <input type="tel" class="form-input phone-number-input" id="phone" placeholder="1 23 45 67 89">
+                        </div>
                     </div>
                     <div class="form-group full-width">
                         <label class="form-label">Occasion</label>
@@ -1949,7 +2177,8 @@
                 reply_to:        bookingData.email,
                 guest_name:      `${bookingData.firstName} ${bookingData.lastName}`,
                 guest_email:     bookingData.email,
-                guest_phone:     bookingData.phone,
+                guest_phone:     `${selectedCountry.code} ${bookingData.phone}`,
+                guest_phone_raw: `${selectedCountry.code}${bookingData.phone.replace(/\s/g, '')}`,
                 experience:      bookingData.experienceLabel,
                 date:            formattedDate,
                 time:            formattedTime,
@@ -2078,6 +2307,259 @@
                 occasionSelect.classList.remove('open');
             }
         });
+
+        // ========================================
+        // COUNTRY CODE DROPDOWN
+        // ========================================
+        const countries = [
+            { flag: '🇦🇫', code: '+93' },
+            { flag: '🇦🇱', code: '+355' },
+            { flag: '🇩🇿', code: '+213' },
+            { flag: '🇦🇩', code: '+376' },
+            { flag: '🇦🇴', code: '+244' },
+            { flag: '🇦🇬', code: '+1268' },
+            { flag: '🇦🇷', code: '+54' },
+            { flag: '🇦🇲', code: '+374' },
+            { flag: '🇦🇺', code: '+61' },
+            { flag: '🇦🇹', code: '+43' },
+            { flag: '🇦🇿', code: '+994' },
+            { flag: '🇧🇸', code: '+1242' },
+            { flag: '🇧🇭', code: '+973' },
+            { flag: '🇧🇩', code: '+880' },
+            { flag: '🇧🇧', code: '+1246' },
+            { flag: '🇧🇾', code: '+375' },
+            { flag: '🇧🇪', code: '+32' },
+            { flag: '🇧🇿', code: '+501' },
+            { flag: '🇧🇯', code: '+229' },
+            { flag: '🇧🇹', code: '+975' },
+            { flag: '🇧🇴', code: '+591' },
+            { flag: '🇧🇦', code: '+387' },
+            { flag: '🇧🇼', code: '+267' },
+            { flag: '🇧🇷', code: '+55' },
+            { flag: '🇧🇳', code: '+673' },
+            { flag: '🇧🇬', code: '+359' },
+            { flag: '🇧🇫', code: '+226' },
+            { flag: '🇧🇮', code: '+257' },
+            { flag: '🇨🇻', code: '+238' },
+            { flag: '🇰🇭', code: '+855' },
+            { flag: '🇨🇲', code: '+237' },
+            { flag: '🇨🇦', code: '+1' },
+            { flag: '🇨🇫', code: '+236' },
+            { flag: '🇹🇩', code: '+235' },
+            { flag: '🇨🇱', code: '+56' },
+            { flag: '🇨🇳', code: '+86' },
+            { flag: '🇨🇴', code: '+57' },
+            { flag: '🇰🇲', code: '+269' },
+            { flag: '🇨🇬', code: '+242' },
+            { flag: '🇨🇩', code: '+243' },
+            { flag: '🇨🇷', code: '+506' },
+            { flag: '🇭🇷', code: '+385' },
+            { flag: '🇨🇺', code: '+53' },
+            { flag: '🇨🇾', code: '+357' },
+            { flag: '🇨🇿', code: '+420' },
+            { flag: '🇩🇰', code: '+45' },
+            { flag: '🇩🇯', code: '+253' },
+            { flag: '🇩🇲', code: '+1767' },
+            { flag: '🇩🇴', code: '+1809' },
+            { flag: '🇪🇨', code: '+593' },
+            { flag: '🇪🇬', code: '+20' },
+            { flag: '🇸🇻', code: '+503' },
+            { flag: '🇬🇶', code: '+240' },
+            { flag: '🇪🇷', code: '+291' },
+            { flag: '🇪🇪', code: '+372' },
+            { flag: '🇸🇿', code: '+268' },
+            { flag: '🇪🇹', code: '+251' },
+            { flag: '🇫🇯', code: '+679' },
+            { flag: '🇫🇮', code: '+358' },
+            { flag: '🇫🇷', code: '+33' },
+            { flag: '🇬🇦', code: '+241' },
+            { flag: '🇬🇲', code: '+220' },
+            { flag: '🇬🇪', code: '+995' },
+            { flag: '🇩🇪', code: '+49' },
+            { flag: '🇬🇭', code: '+233' },
+            { flag: '🇬🇷', code: '+30' },
+            { flag: '🇬🇩', code: '+1473' },
+            { flag: '🇬🇹', code: '+502' },
+            { flag: '🇬🇳', code: '+224' },
+            { flag: '🇬🇼', code: '+245' },
+            { flag: '🇬🇾', code: '+592' },
+            { flag: '🇭🇹', code: '+509' },
+            { flag: '🇭🇳', code: '+504' },
+            { flag: '🇭🇺', code: '+36' },
+            { flag: '🇮🇸', code: '+354' },
+            { flag: '🇮🇳', code: '+91' },
+            { flag: '🇮🇩', code: '+62' },
+            { flag: '🇮🇷', code: '+98' },
+            { flag: '🇮🇶', code: '+964' },
+            { flag: '🇮🇪', code: '+353' },
+            { flag: '🇮🇱', code: '+972' },
+            { flag: '🇮🇹', code: '+39' },
+            { flag: '🇯🇲', code: '+1876' },
+            { flag: '🇯🇵', code: '+81' },
+            { flag: '🇯🇴', code: '+962' },
+            { flag: '🇰🇿', code: '+7' },
+            { flag: '🇰🇪', code: '+254' },
+            { flag: '🇰🇮', code: '+686' },
+            { flag: '🇰🇵', code: '+850' },
+            { flag: '🇰🇷', code: '+82' },
+            { flag: '🇽🇰', code: '+383' },
+            { flag: '🇰🇼', code: '+965' },
+            { flag: '🇰🇬', code: '+996' },
+            { flag: '🇱🇦', code: '+856' },
+            { flag: '🇱🇻', code: '+371' },
+            { flag: '🇱🇧', code: '+961' },
+            { flag: '🇱🇸', code: '+266' },
+            { flag: '🇱🇷', code: '+231' },
+            { flag: '🇱🇾', code: '+218' },
+            { flag: '🇱🇮', code: '+423' },
+            { flag: '🇱🇹', code: '+370' },
+            { flag: '🇱🇺', code: '+352' },
+            { flag: '🇲🇬', code: '+261' },
+            { flag: '🇲🇼', code: '+265' },
+            { flag: '🇲🇾', code: '+60' },
+            { flag: '🇲🇻', code: '+960' },
+            { flag: '🇲🇱', code: '+223' },
+            { flag: '🇲🇹', code: '+356' },
+            { flag: '🇲🇭', code: '+692' },
+            { flag: '🇲🇷', code: '+222' },
+            { flag: '🇲🇺', code: '+230' },
+            { flag: '🇲🇽', code: '+52' },
+            { flag: '🇫🇲', code: '+691' },
+            { flag: '🇲🇩', code: '+373' },
+            { flag: '🇲🇨', code: '+377' },
+            { flag: '🇲🇳', code: '+976' },
+            { flag: '🇲🇪', code: '+382' },
+            { flag: '🇲🇦', code: '+212' },
+            { flag: '🇲🇿', code: '+258' },
+            { flag: '🇲🇲', code: '+95' },
+            { flag: '🇳🇦', code: '+264' },
+            { flag: '🇳🇷', code: '+674' },
+            { flag: '🇳🇵', code: '+977' },
+            { flag: '🇳🇱', code: '+31' },
+            { flag: '🇳🇿', code: '+64' },
+            { flag: '🇳🇮', code: '+505' },
+            { flag: '🇳🇪', code: '+227' },
+            { flag: '🇳🇬', code: '+234' },
+            { flag: '🇲🇰', code: '+389' },
+            { flag: '🇳🇴', code: '+47' },
+            { flag: '🇴🇲', code: '+968' },
+            { flag: '🇵🇰', code: '+92' },
+            { flag: '🇵🇼', code: '+680' },
+            { flag: '🇵🇦', code: '+507' },
+            { flag: '🇵🇬', code: '+675' },
+            { flag: '🇵🇾', code: '+595' },
+            { flag: '🇵🇪', code: '+51' },
+            { flag: '🇵🇭', code: '+63' },
+            { flag: '🇵🇱', code: '+48' },
+            { flag: '🇵🇹', code: '+351' },
+            { flag: '🇶🇦', code: '+974' },
+            { flag: '🇷🇴', code: '+40' },
+            { flag: '🇷🇺', code: '+7' },
+            { flag: '🇷🇼', code: '+250' },
+            { flag: '🇰🇳', code: '+1869' },
+            { flag: '🇱🇨', code: '+1758' },
+            { flag: '🇻🇨', code: '+1784' },
+            { flag: '🇼🇸', code: '+685' },
+            { flag: '🇸🇲', code: '+378' },
+            { flag: '🇸🇹', code: '+239' },
+            { flag: '🇸🇦', code: '+966' },
+            { flag: '🇸🇳', code: '+221' },
+            { flag: '🇷🇸', code: '+381' },
+            { flag: '🇸🇱', code: '+232' },
+            { flag: '🇸🇬', code: '+65' },
+            { flag: '🇸🇰', code: '+421' },
+            { flag: '🇸🇮', code: '+386' },
+            { flag: '🇸🇧', code: '+677' },
+            { flag: '🇸🇴', code: '+252' },
+            { flag: '🇿🇦', code: '+27' },
+            { flag: '🇸🇸', code: '+211' },
+            { flag: '🇪🇸', code: '+34' },
+            { flag: '🇱🇰', code: '+94' },
+            { flag: '🇸🇩', code: '+249' },
+            { flag: '🇸🇷', code: '+597' },
+            { flag: '🇸🇪', code: '+46' },
+            { flag: '🇨🇭', code: '+41' },
+            { flag: '🇸🇾', code: '+963' },
+            { flag: '🇹🇼', code: '+886' },
+            { flag: '🇹🇯', code: '+992' },
+            { flag: '🇹🇿', code: '+255' },
+            { flag: '🇹🇭', code: '+66' },
+            { flag: '🇹🇱', code: '+670' },
+            { flag: '🇹🇬', code: '+228' },
+            { flag: '🇹🇴', code: '+676' },
+            { flag: '🇹🇹', code: '+1868' },
+            { flag: '🇹🇳', code: '+216' },
+            { flag: '🇹🇷', code: '+90' },
+            { flag: '🇹🇲', code: '+993' },
+            { flag: '🇹🇻', code: '+688' },
+            { flag: '🇺🇬', code: '+256' },
+            { flag: '🇺🇦', code: '+380' },
+            { flag: '🇦🇪', code: '+971' },
+            { flag: '🇬🇧', code: '+44' },
+            { flag: '🇺🇸', code: '+1' },
+            { flag: '🇺🇾', code: '+598' },
+            { flag: '🇺🇿', code: '+998' },
+            { flag: '🇻🇺', code: '+678' },
+            { flag: '🇻🇦', code: '+379' },
+            { flag: '🇻🇪', code: '+58' },
+            { flag: '🇻🇳', code: '+84' },
+            { flag: '🇾🇪', code: '+967' },
+            { flag: '🇿🇲', code: '+260' },
+            { flag: '🇿🇼', code: '+263' }
+        ];
+
+        let selectedCountry = { flag: '🇫🇷', code: '+33' };
+        let filteredCountries = [...countries];
+
+        function renderCountryList(list) {
+            const countryList = document.getElementById('countryList');
+            if (list.length === 0) {
+                countryList.innerHTML = '<div class="no-results">No results found</div>';
+                return;
+            }
+            countryList.innerHTML = list.map(c => `
+                <div class="country-option ${c.code === selectedCountry.code && c.flag === selectedCountry.flag ? 'selected' : ''}"
+                    onclick="selectCountry('${c.flag}', '${c.code}')">
+                    <span class="country-option-flag">${c.flag}</span>
+                    <span class="country-option-code">${c.code}</span>
+                </div>
+            `).join('');
+        }
+
+        function selectCountry(flag, code) {
+            selectedCountry = { flag, code };
+            document.getElementById('selectedFlag').textContent = flag;
+            document.getElementById('selectedCode').textContent = code;
+            document.getElementById('countryCodeSelect').classList.remove('open');
+            renderCountryList(filteredCountries);
+        }
+
+        // Toggle dropdown
+        document.getElementById('countryCodeTrigger').addEventListener('click', () => {
+            const select = document.getElementById('countryCodeSelect');
+            select.classList.toggle('open');
+            if (select.classList.contains('open')) {
+                document.getElementById('countrySearch').focus();
+                renderCountryList(countries);
+            }
+        });
+
+        // Search
+        document.getElementById('countrySearch').addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            filteredCountries = countries.filter(c => c.code.includes(query));
+            renderCountryList(filteredCountries);
+        });
+
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!document.getElementById('countryCodeSelect').contains(e.target)) {
+                document.getElementById('countryCodeSelect').classList.remove('open');
+            }
+        });
+
+        // Initial render
+        renderCountryList(countries);
     </script>
 </body>
 </html>
