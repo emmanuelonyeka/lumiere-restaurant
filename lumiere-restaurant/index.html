@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumière | Michelin-Star Fine Dining — Paris</title>
+    <meta name="description" content="Lumière is a two Michelin-star fine dining restaurant in Paris. Experience 12-course tasting menus, award-winning cuisine, and timeless elegance crafted by Executive Chef Antoine Moreau.">
+    <meta name="keywords" content="Lumière restaurant, Michelin star Paris, fine dining Paris, Antoine Moreau chef, tasting menu Paris, luxury restaurant">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.lumiere-restaurant.com/">
+
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="favicon.svg">
+
+    <!-- Open Graph / Social Sharing -->
+    <meta property="og:type" content="restaurant">
+    <meta property="og:url" content="https://www.lumiere-restaurant.com/">
+    <meta property="og:title" content="Lumière | Michelin-Star Fine Dining — Paris">
+    <meta property="og:description" content="Two Michelin stars. Thirty-seven years of culinary excellence. Experience the extraordinary at Lumière, Paris.">
+    <meta property="og:image" content="https://www.lumiere-restaurant.com/images/hero-bg.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="Lumière Fine Dining">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Lumière | Michelin-Star Fine Dining — Paris">
+    <meta name="twitter:description" content="Two Michelin stars. Thirty-seven years of culinary excellence. Experience the extraordinary at Lumière, Paris.">
+    <meta name="twitter:image" content="https://www.lumiere-restaurant.com/images/hero-bg.jpg">
+
+    <!-- Structured Data: Restaurant -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Restaurant",
+      "name": "Lumière",
+      "description": "Two Michelin-star fine dining restaurant in Paris, offering extraordinary tasting menus crafted by Executive Chef Antoine Moreau.",
+      "url": "https://www.lumiere-restaurant.com",
+      "logo": "https://www.lumiere-restaurant.com/favicon.svg",
+      "image": "https://www.lumiere-restaurant.com/images/hero-bg.jpg",
+      "telephone": "+33123456789",
+      "email": "reservations@lumiere.com",
+      "priceRange": "$$$$",
+      "currenciesAccepted": "USD, EUR",
+      "servesCuisine": ["French", "Contemporary", "Fine Dining"],
+      "starRating": {
+        "@type": "Rating",
+        "ratingValue": "2",
+        "bestRating": "3",
+        "ratingExplanation": "Two Michelin Stars"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "42 Avenue des Champs-Élysées",
+        "addressLocality": "Paris",
+        "addressRegion": "Île-de-France",
+        "postalCode": "75008",
+        "addressCountry": "FR"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 48.8698,
+        "longitude": 2.3078
+      },
+      "openingHoursSpecification": [
+        { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Tuesday","Wednesday","Thursday"], "opens": "18:00", "closes": "22:00" },
+        { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Friday","Saturday"], "opens": "18:00", "closes": "23:00" },
+        { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Sunday"], "opens": "12:00", "closes": "21:00" }
+      ],
+      "hasMap": "https://maps.google.com/?q=42+Avenue+des+Champs-Elysees+Paris",
+      "reservations": "https://www.lumiere-restaurant.com/reservation.html",
+      "menu": "https://www.lumiere-restaurant.com/#menu"
+    }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Page Loader -->
+    <div class="page-loader">
+        <div class="loader-logo">
+            <span>L</span><span>U</span><span>M</span><span>I</span><span>È</span><span>R</span><span>E</span>
+        </div>
+        <div class="loader-line"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">
+                <span class="logo-text">Lumière</span>
+            </a>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#about" class="nav-link">Our Story</a></li>
+                <li><a href="#menu" class="nav-link">Menu</a></li>
+                <li><a href="#experience" class="nav-link">Experience</a></li>
+                <li><a href="#gallery" class="nav-link">Gallery</a></li>
+                <li><a href="reservation.html" class="nav-cta">Reserve</a></li>
+            </ul>
+            
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span class="hamburger"></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-bg">
+            <div class="hero-bg">
+                <video 
+                    class="hero-video" 
+                    autoplay 
+                    muted 
+                    loop 
+                    playsinline
+                    poster="images/hero-bg.jpg">
+                    <source src="images/hero-bg.mp4" type="video/mp4">
+                </video>
+                <div class="hero-overlay"></div>
+            </div>
+        </div>
+        
+        <div class="hero-content">
+            <p class="hero-subtitle">Welcome to</p>
+            <h1 class="hero-title">Lumière</h1>
+            <p class="hero-tagline">Where Culinary Art Meets Timeless Elegance</p>
+            <div class="hero-cta">
+                <a href="#menu" class="magnetic-btn">
+                    <span>Explore Menu</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+        
+        <div class="scroll-indicator">
+            <div class="scroll-mouse">
+                <div class="scroll-wheel"></div>
+            </div>
+            <span class="scroll-text">Scroll to discover</span>
+        </div>
+
+        <button class="audio-toggle" id="audioToggle" aria-label="Toggle ambient sound">
+            <!-- Muted icon — shows by default (X on speaker) -->
+            <svg id="audioIconOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:block;">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                <line x1="23" y1="9" x2="17" y2="15"/>
+                <line x1="17" y1="9" x2="23" y2="15"/>
+            </svg>
+            <!-- Playing icon — shows when audio is on (waves on speaker) -->
+            <svg id="audioIconOn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+            </svg>
+        </button>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-content">
+                    <span class="section-label">Our Story</span>
+                    <h2 class="section-title">A Legacy of Culinary Excellence</h2>
+                    <p class="about-text">
+                        Nestled in the heart of the city, Lumière has been a beacon of gastronomic innovation since 1987. Our philosophy is simple: to create extraordinary dining experiences that awaken the senses and linger in memory.
+                    </p>
+                    <p class="about-text">
+                        Under the guidance of Executive Chef Antoine Moreau, each dish is a masterpiece crafted with the finest seasonal ingredients, sourced from local artisans and trusted purveyors around the world.
+                    </p>
+                    <div class="about-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">37</span>
+                            <span class="stat-label">Years of Excellence</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">2</span>
+                            <span class="stat-label">Michelin Stars</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">15K+</span>
+                            <span class="stat-label">Happy Guests</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-image-wrapper">
+                    <div class="about-image">
+                        <img src="images/chef.jpg" alt="Executive Chef Antoine Moreau">
+                        <div class="chef-portrait-accolades">
+                            <div class="portrait-accolade">
+                                <span class="portrait-accolade-value">★★</span>
+                                <span class="portrait-accolade-label">Michelin Stars</span>
+                            </div>
+                            <div class="portrait-accolade-sep"></div>
+                            <div class="portrait-accolade">
+                                <span class="portrait-accolade-value">#11</span>
+                                <span class="portrait-accolade-label">World's 50 Best</span>
+                            </div>
+                            <div class="portrait-accolade-sep"></div>
+                            <div class="portrait-accolade">
+                                <span class="portrait-accolade-value">37</span>
+                                <span class="portrait-accolade-label">Years of Craft</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="about-accent"></div>
+                </div>
+                <div class="chef-editorial">
+                    <div class="chef-editorial-header">
+                        <span class="section-label">The Visionary</span>
+                        <h2 class="chef-editorial-name">Antoine<br>Moreau</h2>
+                        <div class="chef-signature" aria-hidden="true">
+                            <svg viewBox="0 0 400 95" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path class="sig-path"
+                                    d="M 8 74 C 12 70 16 62 22 46 C 28 30 32 16 38 12 C 44 8 48 14 50 24 C 52 34 50 50 48 62 C 46 70 50 76 58 72 C 66 66 70 56 76 54 C 82 52 84 60 80 68 C 76 74 80 76 88 70 C 96 64 100 54 108 52 C 114 50 116 58 114 66 C 112 72 116 74 124 68 C 132 62 134 50 144 50 C 152 50 152 64 148 70 C 144 76 150 78 158 72 C 164 68 166 62 164 64"
+                                    stroke="#C6A769" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path class="sig-path sig-path-delay"
+                                    d="M 184 72 C 184 62 186 44 192 28 C 198 12 202 10 206 20 C 210 30 210 48 212 58 C 214 48 218 30 224 18 C 230 6 234 8 236 20 C 238 32 238 52 238 72"
+                                    stroke="#C6A769" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path class="sig-path sig-path-delay-2"
+                                    d="M 252 60 C 256 50 264 44 272 50 C 280 56 278 68 270 70 C 262 72 258 64 264 58 C 272 50 284 54 290 62 C 296 70 298 58 304 52 C 310 46 316 54 314 64 C 312 72 318 72 326 64 C 334 56 338 48 346 50 C 354 52 354 66 348 72 C 344 76 350 80 360 72 C 370 64 378 54 390 50 C 396 48 400 56 396 68"
+                                    stroke="#C6A769" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path class="sig-path sig-path-delay-2"
+                                    d="M 6 83 C 90 80 220 82 360 78 C 376 77 390 75 398 68"
+                                    stroke="#C6A769" stroke-width="0.5" stroke-linecap="round" opacity="0.35"/>
+                            </svg>
+                        </div>
+                        <p class="chef-editorial-role">Executive Chef &amp; Co-Founder &thinsp;&middot;&thinsp; Lumière, Paris</p>
+                    </div>
+    
+                    <div class="chef-divider">
+                        <span class="chef-divider-line"></span>
+                        <span class="chef-divider-diamond"></span>
+                        <span class="chef-divider-line chef-divider-line--fade"></span>
+                    </div>
+    
+                    <p class="chef-bio">
+                        Born in Lyon and mentored by the legendary Paul Bocuse, Chef Moreau has spent
+                        three decades reimagining the boundaries of French haute cuisine. His guiding
+                        philosophy — ingredient-first, never technique for its own sake — has elevated
+                        Lumière into one of the world's most celebrated tables.
+                    </p>
+    
+                    <div class="chef-michelin-row">
+                        <div class="chef-michelin-stars">
+                            <span class="chef-michelin-star" aria-hidden="true">★</span>
+                            <span class="chef-michelin-star" aria-hidden="true">★</span>
+                        </div>
+                        <div class="chef-michelin-text">
+                            <span class="chef-michelin-title">Michelin Guide · Paris</span>
+                            <span class="chef-michelin-sub">Awarded 2018 &mdash; Retained annually through 2026</span>
+                        </div>
+                    </div>
+    
+                    <ul class="chef-accolades" aria-label="Chef accolades">
+                        <li>
+                            <span class="accolade-year">2024</span>
+                            <span class="accolade-dash"></span>
+                            <span class="accolade-name">World's 50 Best Restaurants &mdash; No.&thinsp;11</span>
+                        </li>
+                        <li>
+                            <span class="accolade-year">2023</span>
+                            <span class="accolade-dash"></span>
+                            <span class="accolade-name">James Beard Award &mdash; Outstanding Chef</span>
+                        </li>
+                        <li>
+                            <span class="accolade-year">2022</span>
+                            <span class="accolade-dash"></span>
+                            <span class="accolade-name">Forbes Travel Guide &mdash; Five Star</span>
+                        </li>
+                        <li>
+                            <span class="accolade-year">2020</span>
+                            <span class="accolade-dash"></span>
+                            <span class="accolade-name">GaultMillau &mdash; Chef of the Year, France</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            
+        </div>
+    </section>
+
+    <!-- Menu Section -->
+    <section class="menu" id="menu">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Culinary Journey</span>
+                <h2 class="section-title">Our Menu</h2>
+                <p class="section-subtitle">Discover a symphony of flavors crafted with passion</p>
+            </div>
+            
+            <!-- Menu Categories -->
+            <div class="menu-categories">
+                <button class="category-btn active" data-category="all">All</button>
+                <button class="category-btn" data-category="starters">Starters</button>
+                <button class="category-btn" data-category="seafood">Seafood</button>
+                <button class="category-btn" data-category="mains">Main Courses</button>
+                <button class="category-btn" data-category="steaks">Wagyu & Steaks</button>
+                <button class="category-btn" data-category="pasta">Pasta & Risotto</button>
+                <button class="category-btn" data-category="desserts">Desserts</button>
+                <button class="category-btn" data-category="cocktails">Cocktails</button>
+                <button class="category-btn" data-category="wines">Wines & Champagne</button>
+            </div>
+            
+            <!-- Menu Grid -->
+            <div class="menu-grid">
+                <!-- Starters -->
+                <div class="menu-heading" data-heading="starters">Starters</div>
+
+                <div class="menu-item" data-category="starters">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/starters/dish-oysters.jpg" alt="Fresh Oysters">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">Belon Oysters</h3>
+                                <span class="menu-price">$48</span>
+                            </div>
+                            <p class="menu-description">Freshly shucked with mignonette, lemon, and champagne granita</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="menu-item" data-category="starters">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/starters/dish-scallops.jpg" alt="Seared Scallops">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">Hokkaido Scallops</h3>
+                                <span class="menu-price">$52</span>
+                            </div>
+                            <p class="menu-description">Seared with caviar, cauliflower purée, and gold leaf</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item" data-category="starters">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/starters/tuna-tartare.jpg" alt="Tuna Tartare">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">Tuna Tartare</h3>
+                                <span class="menu-price">$46</span>
+                            </div>
+                            <p class="menu-description">Hand-cut bluefin tuna layered with avocado cream and topped with sesame crisp</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item" data-category="starters">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/starters/truffle-arancini.jpg" alt="Truffle Arancini">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">Truffle Arancini</h3>
+                                <span class="menu-price">$38</span>
+                            </div>
+                            <p class="menu-description">Golden risotto spheres finished with shaved black truffle and airy parmesan foam</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Seafood -->
+                <div class="menu-heading" data-heading="seafood">Seafood</div>
+
+                <div class="menu-item" data-category="seafood">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/seafoods/dish-lobster.jpg" alt="Lobster Thermidor">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">Lobster Thermidor</h3>
+                                <span class="menu-price">$145</span>
+                            </div>
+                            <p class="menu-description">Whole Boston lobster, cognac cream sauce, gruyère gratin</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item" data-category="seafood">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/seafoods/grilled-sea-bass.jpg" alt="Grilled Sea Bass">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">Grilled Sea Bass</h3>
+                                <span class="menu-price">$88</span>
+                            </div>
+                            <p class="menu-description">Crispy skin sea bass with saffron glaze, asparagus spears, and lemon essence</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item" data-category="seafood">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/seafoods/king-crab.jpg" alt="King Crab Plate">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">King Crab Plate</h3>
+                                <span class="menu-price">$110</span>
+                            </div>
+                            <p class="menu-description">Succulent Alaskan king crab served chilled with citrus butter and fresh herbs</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mains -->
+                <div class="menu-heading" data-heading="mains">Main Courses</div>
+
+                <div class="menu-item" data-category="mains">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/main-courses/dish-risotto.jpg" alt="Truffle Risotto">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">Black Truffle Risotto</h3>
+                                <span class="menu-price">$95</span>
+                            </div>
+                            <p class="menu-description">Arborio rice, aged parmesan, fresh black truffle shavings</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item" data-category="mains">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/main-courses/roasted-chicken.jpg" alt="Herb Roasted Chicken">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">Herb Roasted Chicken</h3>
+                                <span class="menu-price">$68</span>
+                            </div>
+                            <p class="menu-description">Golden roasted chicken with rosemary jus, baby potatoes, and seasonal greens</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item" data-category="mains">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/main-courses/lamb-shank.jpg" alt="Braised Lamb Shank">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">Braised Lamb Shank</h3>
+                                <span class="menu-price">$92</span>
+                            </div>
+                            <p class="menu-description">Tender lamb shank slowly braised in red wine with glazed root vegetables</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item" data-category="mains">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/main-courses/veal-medallion.jpg" alt="Veal Medallions">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">Veal Medallions</h3>
+                                <span class="menu-price">$98</span>
+                            </div>
+                            <p class="menu-description">Pan-seared veal medallions in truffle cream with sautéed wild mushrooms</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Steaks -->
+                <div class="menu-heading" data-heading="steaks">Wagyu & Steaks</div>
+
+                <div class="menu-item" data-category="steaks">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/wagyu-&-steaks/dish-wagyu.jpg" alt="Wagyu Beef">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">A5 Wagyu Tenderloin</h3>
+                                <span class="menu-price">$180</span>
+                            </div>
+                            <p class="menu-description">Japanese Kobe beef, truffle purée, seasonal vegetables</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item" data-category="steaks">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/wagyu-&-steaks/tomahawk-steak.jpg" alt="Tomahawk Steak">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">Tomahawk Steak</h3>
+                                <span class="menu-price">$260</span>
+                            </div>
+                            <p class="menu-description">Bone-in tomahawk steak carved tableside with herb butter and charred shallots</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pasta -->
+                <div class="menu-heading" data-heading="pasta">Pasta & Risotto</div>
+
+                <div class="menu-item" data-category="pasta">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/pasta-&-risotto/lobster-linguine.JPG" alt="Lobster Linguine">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">Lobster Linguine</h3>
+                                <span class="menu-price">$96</span>
+                            </div>
+                            <p class="menu-description">Tender lobster folded through linguine with rich tomato bisque and basil oil</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item" data-category="pasta">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/pasta-&-risotto/mushroom-tagliatelle.jpg" alt="Wild Mushroom Tagliatelle">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">Wild Mushroom Tagliatelle</h3>
+                                <span class="menu-price">$64</span>
+                            </div>
+                            <p class="menu-description">Fresh tagliatelle tossed with forest mushrooms and truffle cream</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item" data-category="pasta">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/pasta-&-risotto/parmesan-gnocchi.jpg" alt="Parmesan Gnocchi">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">Parmesan Gnocchi</h3>
+                                <span class="menu-price">$58</span>
+                            </div>
+                            <p class="menu-description">Pillowy gnocchi glazed in brown butter with sage and shaved parmesan</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Desserts -->
+                <div class="menu-heading" data-heading="desserts">Desserts</div>
+
+                <div class="menu-item" data-category="desserts">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/desserts/dish-dessert.jpg" alt="Chocolate Lava Cake">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">Valrhona Fondant</h3>
+                                <span class="menu-price">$38</span>
+                            </div>
+                            <p class="menu-description">Molten chocolate cake, gold leaf, vanilla bean ice cream</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item" data-category="desserts">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/desserts/vanilla-creme-brulee.jpg" alt="Vanilla Crème Brûlée">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">Vanilla Crème Brûlée</h3>
+                                <span class="menu-price">$28</span>
+                            </div>
+                            <p class="menu-description">Silky vanilla custard with crackling caramelized sugar crust
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Cocktails -->
+                <div class="menu-heading" data-heading="cocktails">Cocktails</div>
+
+                <div class="menu-item" data-category="cocktails">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/cocktails/cocktail.jpg" alt="Signature Cocktail">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">Lumière Old Fashioned</h3>
+                                <span class="menu-price">$32</span>
+                            </div>
+                            <p class="menu-description">Smoked bourbon, maple syrup, aromatic bitters, orange peel</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item" data-category="cocktails">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/cocktails/smoked-negroni.jpg" alt="Smoked Negroni">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">Smoked Negroni</h3>
+                                <span class="menu-price">$26</span>
+                            </div>
+                            <p class="menu-description">Classic negroni presented under aromatic citrus smoke</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item" data-category="cocktails">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/cocktails/citrus-royale.jpg" alt="Citrus Royale">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">Citrus Royale</h3>
+                                <span class="menu-price">$22</span>
+                            </div>
+                            <p class="menu-description">Refreshing vodka cocktail with lime zest and citrus foam</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Wines -->
+                <div class="menu-heading" data-heading="wines">Wines & Champagne</div>
+                
+                <div class="menu-item" data-category="wines">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/wines-&-champagnes/champagne.jpg" alt="Champagne">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">Dom Pérignon 2012</h3>
+                                <span class="menu-price">$450</span>
+                            </div>
+                            <p class="menu-description">Vintage champagne, notes of almond, cocoa, and dried fruits</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item" data-category="wines">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/wines-&-champagnes/château-margaux.JPG" alt="Château Margaux 2015">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">Château Margaux 2015</h3>
+                                <span class="menu-price">$620</span>
+                            </div>
+                            <p class="menu-description">Elegant Bordeaux with deep ruby color and velvety finish</p>
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="menu-item" data-category="wines">
+                    <div class="menu-card">
+                        <div class="menu-image">
+                            <img src="images/wines-&-champagnes/veuve-clicquot-brut.jpg" alt="Veuve Clicquot Brut">
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-header">
+                                <h3 class="menu-name">Veuve Clicquot Brut</h3>
+                                <span class="menu-price">$180</span>
+                            </div>
+                            <p class="menu-description">Classic golden champagne with crisp apple and citrus aroma</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+            
+            <div class="menu-note">
+                <p>* All prices are in USD. A 20% service charge will be added to your bill.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chef's Special Section -->
+    <section class="chef-special">
+        <div class="container">
+            <div class="special-grid">
+                <div class="special-content">
+                    <span class="section-label">Chef's Selection</span>
+                    <h2 class="section-title">The Tasting Menu</h2>
+                    <p class="special-text">
+                        Embark on an extraordinary culinary journey with our exclusive 12-course tasting menu, personally curated by Executive Chef Antoine Moreau. Each course tells a story of passion, precision, and the finest ingredients sourced from around the world.
+                    </p>
+                    <ul class="special-features">
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 6L9 17l-5-5"/>
+                            </svg>
+                            <span>12 Exquisite Courses</span>
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 6L9 17l-5-5"/>
+                            </svg>
+                            <span>Wine Pairing Available</span>
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 6L9 17l-5-5"/>
+                            </svg>
+                            <span>Personalized Service</span>
+                        </li>
+                    </ul>
+                    <div class="special-price">
+                        <span class="price-label">Starting from</span>
+                        <span class="price-value">$385 per person</span>
+                    </div>
+                    <a href="reservation.html" class="magnetic-btn">
+                        <span>Reserve Experience</span>
+                    </a>
+                </div>
+                <div class="special-image">
+                    <img src="images/wine-cellar.jpg" alt="Wine Cellar">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Signature Experience Section -->
+    <section class="experience" id="experience">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Unforgettable Moments</span>
+                <h2 class="section-title">Signature Experiences</h2>
+                <p class="section-subtitle">Elevate your dining journey with our exclusive offerings</p>
+            </div>
+            
+            <div class="experience-grid">
+                <a href="reservation.html?experience=tasting" class="experience-card">
+                    <div class="experience-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <h3 class="experience-title">Chef's Tasting Menu</h3>
+                    <p class="experience-description">
+                        A 12-course journey through the finest flavors, crafted with seasonal ingredients and artistic presentation.
+                    </p>
+                    <span class="experience-price">From $385</span>
+                    <span class="exp-reserve-btn">Reserve Experience</span>
+                </a>
+                
+                <a href="reservation.html?experience=wine" class="experience-card featured">
+                    <div class="experience-badge">Most Popular</div>
+                    <div class="experience-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <h3 class="experience-title">Wine Pairing Journey</h3>
+                    <p class="experience-description">
+                        Each course paired with exceptional wines from our 5,000-bottle cellar, guided by our sommelier.
+                    </p>
+                    <span class="experience-price">From $195</span>
+                    <span class="exp-reserve-btn">Reserve Experience</span>
+                </a>
+                
+                <a href="reservation.html?experience=private" class="experience-card">
+                    <div class="experience-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                    <h3 class="experience-title">Private Dining</h3>
+                    <p class="experience-description">
+                        Exclusive use of our private dining room for up to 20 guests, with a customized menu and dedicated service.
+                    </p>
+                    <span class="experience-price">From $2,500</span>
+                    <span class="exp-reserve-btn">Enquire Now</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reservation CTA Section -->
+    <section class="reservation" id="reservation">
+        <div class="reservation-bg">
+            <img src="images/private-dining.jpg" alt="Private Dining Room">
+            <div class="reservation-overlay"></div>
+        </div>
+        <div class="container">
+            <div class="reservation-content">
+                <span class="section-label">Reserve Your Table</span>
+                <h2 class="section-title">Begin Your Culinary Journey</h2>
+                <p class="reservation-text">
+                    Join us for an unforgettable dining experience. Reservations are recommended, especially for weekends and special occasions.
+                </p>
+                <div class="reservation-cta">
+                    <a href="tel:+33123456789" class="magnetic-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                        <span>Call to Reserve</span>
+                    </a>
+                    <a href="mailto:reservations@lumiere.com" class="magnetic-btn secondary">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                        <span>Email Us</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="gallery" id="gallery">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Visual Journey</span>
+                <h2 class="section-title">Gallery</h2>
+                <p class="section-subtitle">Glimpses of the Lumière experience</p>
+            </div>
+            
+            <div class="gallery-grid">
+                <div class="gallery-item large">
+                    <img src="images/hero-bg.jpg" alt="Restaurant Interior">
+                    <div class="gallery-overlay">
+                        <span class="gallery-caption">The Dining Room</span>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="images/starters/dish-scallops.jpg" alt="Seared Scallops">
+                    <div class="gallery-overlay">
+                        <span class="gallery-caption">Hokkaido Scallops</span>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="images/cocktails/cocktail.jpg" alt="Signature Cocktail">
+                    <div class="gallery-overlay">
+                        <span class="gallery-caption">Lumière Old Fashioned</span>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="images/wagyu-&-steaks/dish-wagyu.jpg" alt="Wagyu Beef">
+                    <div class="gallery-overlay">
+                        <span class="gallery-caption">A5 Wagyu</span>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="images/wines-&-champagnes/champagne.jpg" alt="Champagne">
+                    <div class="gallery-overlay">
+                        <span class="gallery-caption">Champagne Service</span>
+                    </div>
+                </div>
+                <div class="gallery-item large">
+                    <img src="images/private-dining.jpg" alt="Private Dining">
+                    <div class="gallery-overlay">
+                        <span class="gallery-caption">Private Dining Room</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3 class="footer-logo">Lumière</h3>
+                    <p class="footer-tagline">Where Culinary Art Meets Timeless Elegance</p>
+                    <div class="footer-social">
+                        <a href="https://www.instagram.com" class="social-link" aria-label="Instagram">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                            </svg>
+                        </a>
+                        <a href="https://www.facebook.com" class="social-link" aria-label="Facebook">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                            </svg>
+                        </a>
+                        <a href="https://www.x.com" class="social-link" aria-label="Twitter">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-info">
+                    <h4 class="footer-title">Visit Us</h4>
+                    <address class="footer-address">
+                        <p>42 Avenue des Champs-Élysées</p>
+                        <p>Paris, France 75008</p>
+                    </address>
+                </div>
+                
+                <div class="footer-hours">
+                    <h4 class="footer-title">Opening Hours</h4>
+                    <ul class="hours-list">
+                        <li>
+                            <span class="day">Tuesday - Thursday</span>
+                            <span class="time">6:00 PM - 10:00 PM</span>
+                        </li>
+                        <li>
+                            <span class="day">Friday - Saturday</span>
+                            <span class="time">6:00 PM - 11:00 PM</span>
+                        </li>
+                        <li>
+                            <span class="day">Sunday</span>
+                            <span class="time">12:00 PM - 9:00 PM</span>
+                        </li>
+                        <li>
+                            <span class="day">Monday</span>
+                            <span class="time closed">Closed</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="footer-contact">
+                    <h4 class="footer-title">Contact</h4>
+                    <ul class="contact-list">
+                        <li>
+                            <a href="tel:+33123456789">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                </svg>
+                                <span>+33 1 23 45 67 89</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="mailto:reservations@lumiere.com">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                    <polyline points="22,6 12,13 2,6"/>
+                                </svg>
+                                <span>reservations@lumiere.com</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="reservation.html" class="magnetic-btn book-now">
+                                <span>Book Online</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p class="copyright">&copy; 2026 Lumière. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="legal.html?tab=privacy">Privacy Policy</a>
+                    <a href="legal.html?tab=terms">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
