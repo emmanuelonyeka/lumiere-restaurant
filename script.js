@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initTextReveal();
     initHeroAnimations();
     initGalleryTap();
+    initHeroAmbience();
 });
 
 /**
@@ -489,6 +490,7 @@ function initParallaxEffect() {
         if (!ticking) {
             requestAnimationFrame(() => {
                 // Hero parallax
+                const heroImage = document.querySelector('.hero-image');
                 if (heroImage && lastScrollY < window.innerHeight) {
                     const parallaxValue = lastScrollY * 0.4;
                     heroImage.style.transform = `translateY(${parallaxValue}px) scale(1)`;
@@ -655,6 +657,173 @@ function initGalleryTap() {
             }, 800);
         }, { passive: true });
     });
+}
+
+/**
+ * ========================================
+ * AUDIO PLAY
+ * ========================================
+ */
+function initHeroAmbience() {
+    const heroSection = document.querySelector('.hero');
+    if (!heroSection) return;
+
+    const tracks = [
+        'audio/ambient-1.mp3',
+        'audio/ambient-2.mp3',
+        'audio/ambient-3.mp3'
+    ];
+
+    const MAX_VOLUME = 0.1; // adjust this to taste 0.1 = very subtle, 0.4 = noticeable
+
+    let currentTrackIndex = 0;
+    let lastTrackIndex = 0;
+    let audio = new Audio(tracks[0]);
+    audio.loop = false;
+    audio.volume = 0;
+
+    let fadeInterval;
+    let audioUnlocked = false;
+    let heroVisible = false;
+    let isPlaying = false;
+
+    // Auto advance when track ends
+    audio.addEventListener('ended', () => {
+        if (heroVisible && audioUnlocked && isPlaying) {
+            switchTrack();
+            setTimeout(() => {
+                audio.play().then(() => {
+                    fadeVolume(MAX_VOLUME, 1200);
+                }).catch(() => {});
+            }, 300);
+        }
+    });
+
+    function fadeVolume(targetVolume, duration) {
+        clearInterval(fadeInterval);
+        const steps = 20;
+        const stepTime = duration / steps;
+        const volumeStep = (targetVolume - audio.volume) / steps;
+
+        fadeInterval = setInterval(() => {
+            const newVolume = audio.volume + volumeStep;
+            if (
+                (volumeStep > 0 && newVolume >= targetVolume) ||
+                (volumeStep < 0 && newVolume <= targetVolume)
+            ) {
+                audio.volume = targetVolume;
+                clearInterval(fadeInterval);
+
+                if (targetVolume === 0 && heroVisible === false) {
+                    // Only switch track when scrolling away, not when manually muting
+                    audio.pause();
+                    audio.currentTime = 0;
+                    switchTrack();
+                } else if (targetVolume === 0) {
+                    audio.pause();
+                }
+            } else {
+                audio.volume = Math.min(1, Math.max(0, newVolume));
+            }
+        }, stepTime);
+    }
+
+    function switchTrack() {
+        let newIndex;
+        do {
+            newIndex = Math.floor(Math.random() * tracks.length);
+        } while (newIndex === lastTrackIndex);
+
+        lastTrackIndex = currentTrackIndex;
+        currentTrackIndex = newIndex;
+        audio.src = tracks[currentTrackIndex];
+        audio.load();
+    }
+
+    function playHero() {
+        if (!isPlaying) return;
+        audio.play().then(() => {
+            fadeVolume(MAX_VOLUME, 1200);
+        }).catch(() => {});
+    }
+
+    function pauseHero() {
+        fadeVolume(0, 900);
+    }
+
+    // IntersectionObserver
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                heroVisible = true;
+                if (audioUnlocked && isPlaying) playHero();
+            } else {
+                heroVisible = false;
+                if (audioUnlocked && isPlaying) pauseHero();
+            }
+        });
+    }, { threshold: 0.2 });
+
+    observer.observe(heroSection);
+
+    // Audio toggle button
+    const audioToggle = document.getElementById('audioToggle');
+    const audioIconOn = document.getElementById('audioIconOn');
+    const audioIconOff = document.getElementById('audioIconOff');
+
+    if (audioToggle) {
+        audioToggle.addEventListener('click', () => {
+            if (!audioUnlocked) {
+                // First click — unlock and start
+                audioUnlocked = true;
+                isPlaying = true;
+
+                audio.load();
+                audio.volume = 0;
+                audio.play().then(() => {
+                    fadeVolume(MAX_VOLUME, 1200);
+                    audioIconOff.style.display = 'none';
+                    audioIconOn.style.display = 'block';
+                }).catch((e) => {
+                    console.error('Play failed:', e);
+                });
+                return;
+            }
+
+            // Toggle on/off after unlock
+            isPlaying = !isPlaying;
+
+            if (isPlaying) {
+                // Resume from exact position — no track change
+                audio.play().then(() => {
+                    fadeVolume(MAX_VOLUME, 800);
+                }).catch(() => {});
+                audioIconOff.style.display = 'none';
+                audioIconOn.style.display = 'block';
+            } else {
+                // Fade out then pause — keep position, no track switch
+                clearInterval(fadeInterval);
+                const steps = 20;
+                const stepTime = 500 / steps;
+                const volumeStep = audio.volume / steps;
+            
+                const pauseFade = setInterval(() => {
+                    const newVolume = audio.volume - volumeStep;
+                    if (newVolume <= 0) {
+                        audio.volume = 0;
+                        audio.pause();
+                        // DO NOT call switchTrack() here
+                        clearInterval(pauseFade);
+                    } else {
+                        audio.volume = newVolume;
+                    }
+                }, stepTime);
+            
+                audioIconOn.style.display = 'none';
+                audioIconOff.style.display = 'block';
+            }
+        });
+    }
 }
 
 /**
