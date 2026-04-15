@@ -674,7 +674,7 @@ function initHeroAmbience() {
         'audio/ambient-3.mp3'
     ];
 
-    const MAX_VOLUME = 0.1; // adjust this to taste 0.1 = very subtle, 0.4 = noticeable
+    const MAX_VOLUME = 0.2;
 
     let currentTrackIndex = 0;
     let lastTrackIndex = 0;
@@ -682,10 +682,11 @@ function initHeroAmbience() {
     audio.loop = false;
     audio.volume = 0;
 
-    let fadeInterval;
+    let fadeInterval = null;
     let audioUnlocked = false;
     let heroVisible = false;
     let isPlaying = false;
+    let isManuallyStopped = false; // track if user manually muted
 
     // Auto advance when track ends
     audio.addEventListener('ended', () => {
@@ -699,29 +700,28 @@ function initHeroAmbience() {
         }
     });
 
-    function fadeVolume(targetVolume, duration) {
-        clearInterval(fadeInterval);
+    function fadeVolume(targetVolume, duration, onComplete) {
+        // Clear any existing fade
+        if (fadeInterval) {
+            clearInterval(fadeInterval);
+            fadeInterval = null;
+        }
+
+        const startVolume = audio.volume;
         const steps = 20;
-        const stepTime = duration / steps;
-        const volumeStep = (targetVolume - audio.volume) / steps;
+        const stepTime = Math.max(10, duration / steps);
+        const volumeStep = (targetVolume - startVolume) / steps;
+        let stepCount = 0;
 
         fadeInterval = setInterval(() => {
-            const newVolume = audio.volume + volumeStep;
-            if (
-                (volumeStep > 0 && newVolume >= targetVolume) ||
-                (volumeStep < 0 && newVolume <= targetVolume)
-            ) {
-                audio.volume = targetVolume;
-                clearInterval(fadeInterval);
+            stepCount++;
+            const newVolume = startVolume + (volumeStep * stepCount);
 
-                if (targetVolume === 0 && heroVisible === false) {
-                    // Only switch track when scrolling away, not when manually muting
-                    audio.pause();
-                    audio.currentTime = 0;
-                    switchTrack();
-                } else if (targetVolume === 0) {
-                    audio.pause();
-                }
+            if (stepCount >= steps) {
+                audio.volume = Math.min(1, Math.max(0, targetVolume));
+                clearInterval(fadeInterval);
+                fadeInterval = null;
+                if (onComplete) onComplete();
             } else {
                 audio.volume = Math.min(1, Math.max(0, newVolume));
             }
@@ -741,28 +741,47 @@ function initHeroAmbience() {
     }
 
     function playHero() {
-        if (!isPlaying) return;
+        if (!isPlaying || isManuallyStopped) return;
         audio.play().then(() => {
             fadeVolume(MAX_VOLUME, 1200);
         }).catch(() => {});
     }
 
     function pauseHero() {
-        fadeVolume(0, 900);
+        // Fade out then pause and switch track for next return
+        fadeVolume(0, 900, () => {
+            audio.pause();
+            audio.currentTime = 0;
+            switchTrack();
+        });
     }
 
-    // IntersectionObserver
+    function muteHero() {
+        // Fade out then pause — keep position, no track switch
+        fadeVolume(0, 500, () => {
+            audio.pause();
+        });
+    }
+
+    // IntersectionObserver — use threshold 0 for reliable mobile detection
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                heroVisible = true;
-                if (audioUnlocked && isPlaying) playHero();
-            } else {
-                heroVisible = false;
-                if (audioUnlocked && isPlaying) pauseHero();
+            heroVisible = entry.isIntersecting;
+            if (!audioUnlocked) return;
+
+            if (heroVisible && isPlaying && !isManuallyStopped) {
+                // Resume audio
+                audio.play().then(() => {
+                    fadeVolume(MAX_VOLUME, 1200);
+                }).catch(() => {});
+            } else if (!heroVisible && isPlaying) {
+                pauseHero();
             }
         });
-    }, { threshold: 0.2 });
+    }, {
+        threshold: 0,
+        rootMargin: '0px'
+    });
 
     observer.observe(heroSection);
 
@@ -771,56 +790,52 @@ function initHeroAmbience() {
     const audioIconOn = document.getElementById('audioIconOn');
     const audioIconOff = document.getElementById('audioIconOff');
 
+    function showPlayingIcon() {
+        if (audioIconOff) audioIconOff.style.display = 'none';
+        if (audioIconOn) audioIconOn.style.display = 'block';
+    }
+
+    function showMutedIcon() {
+        if (audioIconOn) audioIconOn.style.display = 'none';
+        if (audioIconOff) audioIconOff.style.display = 'block';
+    }
+
     if (audioToggle) {
-        audioToggle.addEventListener('click', () => {
+        audioToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+
             if (!audioUnlocked) {
-                // First click — unlock and start
+                // First ever click — unlock audio
                 audioUnlocked = true;
                 isPlaying = true;
+                isManuallyStopped = false;
 
-                audio.load();
                 audio.volume = 0;
                 audio.play().then(() => {
                     fadeVolume(MAX_VOLUME, 1200);
-                    audioIconOff.style.display = 'none';
-                    audioIconOn.style.display = 'block';
-                }).catch((e) => {
-                    console.error('Play failed:', e);
+                    showPlayingIcon();
+                }).catch((err) => {
+                    console.error('Play failed:', err);
+                    audioUnlocked = false;
+                    isPlaying = false;
                 });
                 return;
             }
 
-            // Toggle on/off after unlock
-            isPlaying = !isPlaying;
-
-            if (isPlaying) {
-                // Resume from exact position — no track change
+            // Toggle after unlock
+            if (isPlaying && !isManuallyStopped) {
+                // Currently playing — mute it
+                isManuallyStopped = true;
+                muteHero();
+                showMutedIcon();
+            } else {
+                // Currently muted — resume
+                isManuallyStopped = false;
+                isPlaying = true;
                 audio.play().then(() => {
                     fadeVolume(MAX_VOLUME, 800);
+                    showPlayingIcon();
                 }).catch(() => {});
-                audioIconOff.style.display = 'none';
-                audioIconOn.style.display = 'block';
-            } else {
-                // Fade out then pause — keep position, no track switch
-                clearInterval(fadeInterval);
-                const steps = 20;
-                const stepTime = 500 / steps;
-                const volumeStep = audio.volume / steps;
-            
-                const pauseFade = setInterval(() => {
-                    const newVolume = audio.volume - volumeStep;
-                    if (newVolume <= 0) {
-                        audio.volume = 0;
-                        audio.pause();
-                        // DO NOT call switchTrack() here
-                        clearInterval(pauseFade);
-                    } else {
-                        audio.volume = newVolume;
-                    }
-                }, stepTime);
-            
-                audioIconOn.style.display = 'none';
-                audioIconOff.style.display = 'block';
             }
         });
     }
