@@ -701,31 +701,34 @@ function initHeroAmbience() {
     });
 
     function fadeVolume(targetVolume, duration, onComplete) {
-        // Clear any existing fade
         if (fadeInterval) {
-            clearInterval(fadeInterval);
+            cancelAnimationFrame(fadeInterval);
             fadeInterval = null;
         }
-
+    
         const startVolume = audio.volume;
-        const steps = 20;
-        const stepTime = Math.max(10, duration / steps);
-        const volumeStep = (targetVolume - startVolume) / steps;
-        let stepCount = 0;
-
-        fadeInterval = setInterval(() => {
-            stepCount++;
-            const newVolume = startVolume + (volumeStep * stepCount);
-
-            if (stepCount >= steps) {
+        const startTime = performance.now();
+    
+        function step(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+    
+            // Ease out for smooth fade
+            const eased = 1 - Math.pow(1 - progress, 3);
+            audio.volume = Math.min(1, Math.max(0,
+                startVolume + (targetVolume - startVolume) * eased
+            ));
+    
+            if (progress < 1) {
+                fadeInterval = requestAnimationFrame(step);
+            } else {
                 audio.volume = Math.min(1, Math.max(0, targetVolume));
-                clearInterval(fadeInterval);
                 fadeInterval = null;
                 if (onComplete) onComplete();
-            } else {
-                audio.volume = Math.min(1, Math.max(0, newVolume));
             }
-        }, stepTime);
+        }
+    
+        fadeInterval = requestAnimationFrame(step);
     }
 
     function switchTrack() {
