@@ -2860,6 +2860,17 @@ button {
 }
 
 /* ── Responsive ── */
+@media (min-width: 641px) {
+    .expect-cta-btns {
+        display: inline-grid;
+        grid-template-columns: 1fr 1fr;
+    }
+    .expect-cta-btns .magnetic-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
 @media (max-width: 1024px) {
     .expect-details {
         grid-template-columns: repeat(2, 1fr);
@@ -4180,23 +4191,27 @@ a.experience-card {
     position: relative;
 }
 
-.contact-list a::after {
+.contact-list a span {
+    position: relative;
+}
+
+.contact-list a span::after {
     content: '';
     position: absolute;
+    left: 0;
     bottom: -2px;
-    left: 27px;
     width: 0;
     height: 1px;
     background: var(--color-gold);
-    transition: width 0.3s ease;
+    transition: width 0.4s ease;
+}
+
+.contact-list a:hover span::after {
+    width: 100%;
 }
 
 .contact-list a:hover {
     color: var(--color-gold);
-}
-
-.contact-list a:hover::after {
-    width: calc(100% - 27px);
 }
 
 .contact-list svg {
@@ -4431,6 +4446,102 @@ a.experience-card {
 
 .footer-links a:hover::after {
     width: 100%;
+}
+
+/* ========================================
+   FOOTER — SLIM VARIANT
+   For reservation, modify, 404 pages
+   ======================================== */
+
+   .footer-slim {
+    padding: var(--space-16) 0 var(--space-8);
+    background: var(--color-bg-secondary);
+    border-top: 1px solid var(--color-border);
+}
+
+.footer-slim-grid {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-10);
+    padding-bottom: var(--space-10);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--space-8);
+}
+
+.footer-slim-brand {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    flex-shrink: 0;
+}
+
+.footer-slim-brand .footer-logo {
+    margin-bottom: 0;
+    font-size: var(--text-2xl);
+}
+
+.footer-slim-brand .footer-tagline {
+    font-size: var(--text-xs);
+    margin-bottom: 0;
+}
+
+.footer-slim-contact {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+    flex-wrap: wrap;
+}
+
+.footer-slim-contact a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 300;
+    color: var(--color-text-secondary);
+    transition: color 0.3s ease;
+}
+
+.footer-slim-contact a:hover {
+    color: var(--color-gold);
+}
+
+.footer-slim-contact svg {
+    width: 16px;
+    height: 16px;
+    color: var(--color-gold);
+    flex-shrink: 0;
+}
+
+.footer-slim .footer-bottom {
+    border-top: none;
+    padding-top: 0;
+    margin-top: 0;
+}
+
+@media (max-width: 768px) {
+    .footer-slim-grid {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-6);
+        text-align: left;
+    }
+    .footer-slim-contact {
+        gap: var(--space-5);
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer-slim-contact {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .footer-slim-contact a {
+        width: 100%;
+    }
 }
 
 /* ========================================

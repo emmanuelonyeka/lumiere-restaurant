@@ -117,7 +117,7 @@
             border: 1px solid var(--color-border);
             border-left: 3px solid var(--color-gold);
             border-radius: var(--radius-sm);
-            padding: var(--space-5) var(--space-7);
+            padding: var(--space-5) var(--space-6);
             margin-bottom: var(--space-10);
         }
 
@@ -371,7 +371,7 @@
             pointer-events: auto;
         }
 
-        .time-slot:hover:not(.unavailable):not(.past) {
+        .time-slot:hover:not(.unavailable):not(.past):not(.selected) {
             border-color: var(--color-gold);
             color: var(--color-gold);
         }
@@ -380,6 +380,9 @@
             background: var(--color-gold);
             border-color: var(--color-gold);
             color: var(--color-bg-primary);
+        }.time-slot.selected:hover {
+            color: var(--color-bg-primary);
+            background: var(--color-gold-dark);
         }
 
         .time-slot.unavailable { opacity: 0.3; cursor: not-allowed; text-decoration: line-through; }
@@ -857,8 +860,8 @@
                     </div>
 
                     <div class="no-availability" id="noAvailability">
-                        <div class="no-availability-title">No availability for this date</div>
-                        <p class="no-availability-text">All time slots are fully booked. Try one of these nearby dates:</p>
+                        <div class="no-availability-title" id="noAvailTitle">No availability for this date</div>
+                        <p class="no-availability-text" id="noAvailText">All time slots are fully booked. Try one of these nearby dates:</p>
                         <div class="suggest-dates" id="suggestDates"></div>
                     </div>
                 </div>
@@ -939,6 +942,41 @@
         </div>
     </div>
 </div>
+
+<!-- Footer -->
+<footer class="footer footer-slim">
+    <div class="container">
+        <div class="footer-slim-grid">
+            <div class="footer-slim-brand">
+                <h3 class="footer-logo">Lumière</h3>
+                <p class="footer-tagline">Where Culinary Art Meets Timeless Elegance</p>
+            </div>
+            <div class="footer-slim-contact">
+                <a href="tel:+33123456789">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                    <span>+33 1 23 45 67 89</span>
+                </a>
+                <a href="mailto:reservations@lumiere.com">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                    <span>reservations@lumiere.com</span>
+                </a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="copyright">&copy; 2026 Lumière. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="legal.html?tab=privacy">Privacy</a>
+                <a href="legal.html?tab=terms">Terms</a>
+            </div>
+        </div>
+    </div>
+</footer>
 
 <script src="script.js"></script>
 <script>
@@ -1221,11 +1259,12 @@ function applyAvailability(dateStr, party) {
     const past      = getPastSlots(dateStr);
     const slots     = container.querySelectorAll('.time-slot');
     let available   = 0;
+    let pastCount   = 0;
 
     slots.forEach(slot => {
         const t = slot.dataset.time;
         slot.classList.remove('unavailable','past','selected');
-        if (past.includes(t))     { slot.classList.add('past'); }
+        if (past.includes(t))     { slot.classList.add('past'); pastCount++; }
         else if (disabled.includes(t)) { slot.classList.add('unavailable'); }
         else                      { available++; }
     });
@@ -1236,7 +1275,20 @@ function applyAvailability(dateStr, party) {
         container.style.display = 'none';
         noAvail.classList.add('visible');
         hint.textContent = '';
+
+        const titleEl = document.getElementById('noAvailTitle');
+        const textEl  = document.getElementById('noAvailText');
+
+        if (pastCount === slots.length) {
+            titleEl.textContent = 'Service has ended for today';
+            textEl.textContent  = 'It is now too late in the evening to reserve a table for tonight. Please choose one of the nearby dates below:';
+        } else {
+            titleEl.textContent = 'No availability for this date';
+            textEl.textContent  = 'All time slots are fully booked. Try one of these nearby dates:';
+        }
+
         suggestNearestDates(dateStr, party);
+    
     } else {
         noAvail.classList.remove('visible');
         hint.textContent = large
@@ -1448,8 +1500,11 @@ function submitModification() {
 
     const templateParams = {
         booking_id:            bookingId,
+        subject_line:          'Reservation Updated — Lumière',
         is_modification:       'YES',
         is_cancellation:       '',
+        is_pending:            '',
+        is_confirmed:          '',
         to_email:              'lumiere.fine.dining@gmail.com',
         reply_to:              em,
         guest_name:            newName,

@@ -756,6 +756,9 @@ function confirmReservation() {
     const templateParams = {
         booking_id:      bookingId,
         email_type:      'confirmed',
+        subject_line:    'Reservation Confirmed — Lumière',
+        is_pending:      '',
+        is_confirmed:    'YES',
         is_cancellation: '',
         is_modification: '',
         is_large_group:  '',

@@ -838,8 +838,11 @@ function confirmCancellation() {
 
     const templateParams = {
         booking_id:           bookingId,
+        subject_line:         'Reservation Cancelled — Lumière',
         is_cancellation:      'YES',
         is_modification:      '',
+        is_pending:           '',
+        is_confirmed:         '',
         is_large_group:       '',
         guest_name:           guestName,
         guest_email:          guestEmail,

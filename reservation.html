@@ -281,12 +281,16 @@
             transition:all .3s ease; letter-spacing:.05em;
             user-select:none;
         }
-        .time-slot:hover:not(.unavailable):not(.past) {
+        .time-slot:hover:not(.unavailable):not(.past):not(.selected) {
             border-color:var(--color-gold); color:var(--color-gold);
         }
         .time-slot.selected {
             background:var(--color-gold); border-color:var(--color-gold);
             color:var(--color-bg-primary);
+        }
+        .time-slot.selected:hover {
+            color:var(--color-bg-primary);
+            background: var(--color-gold-dark);
         }
         .time-slot.unavailable {
             opacity:.3; cursor:not-allowed; text-decoration:line-through;
@@ -839,8 +843,8 @@
 
                 <!-- No availability -->
                 <div class="no-availability" id="noAvailability">
-                    <div class="no-availability-title">No availability for this date</div>
-                    <p class="no-availability-text">All time slots are fully booked for your selected date. Try one of the nearest available dates below:</p>
+                    <div class="no-availability-title" id="noAvailTitle">No availability for this date</div>
+                    <p class="no-availability-text" id="noAvailText">All time slots are fully booked for your selected date. Try one of the nearest available dates below:</p>
                     <div class="suggest-dates" id="suggestDates"></div>
                 </div>
             </div>
@@ -987,63 +991,35 @@
 </section>
 
 <!-- Footer -->
-<footer class="footer">
+<footer class="footer footer-slim">
     <div class="container">
-        <div class="footer-grid">
-            <div class="footer-brand">
+        <div class="footer-slim-grid">
+            <div class="footer-slim-brand">
                 <h3 class="footer-logo">Lumière</h3>
                 <p class="footer-tagline">Where Culinary Art Meets Timeless Elegance</p>
-                <div class="footer-social">
-                    <a href="https://www.instagram.com" class="social-link" aria-label="Instagram">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-                    </a>
-                    <a href="https://www.facebook.com" class="social-link" aria-label="Facebook">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-                    </a>
-                    <a href="https://www.x.com" class="social-link" aria-label="Twitter">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
-                    </a>
-                </div>
             </div>
-            <div class="footer-info">
-                <h4 class="footer-title">Visit Us</h4>
-                <address class="footer-address">
-                    <p>42 Avenue des Champs-Élysées</p>
-                    <p>Paris, France 75008</p>
-                </address>
-            </div>
-            <div class="footer-hours">
-                <h4 class="footer-title">Opening Hours</h4>
-                <ul class="hours-list">
-                    <li><span class="day">Tuesday - Thursday</span><span class="time">6:00 PM - 10:00 PM</span></li>
-                    <li><span class="day">Friday - Saturday</span><span class="time">6:00 PM - 11:00 PM</span></li>
-                    <li><span class="day">Sunday</span><span class="time">12:00 PM - 9:00 PM</span></li>
-                    <li><span class="day">Monday</span><span class="time closed">Closed</span></li>
-                </ul>
-            </div>
-            <div class="footer-contact">
-                <h4 class="footer-title">Contact</h4>
-                <ul class="contact-list">
-                    <li>
-                        <a href="tel:+33123456789">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                            <span>+33 1 23 45 67 89</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="mailto:reservations@lumiere.com">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                            <span>reservations@lumiere.com</span>
-                        </a>
-                    </li>
-                </ul>
+            <div class="footer-slim-contact">
+                <a href="tel:+33123456789">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                    <span>+33 1 23 45 67 89</span>
+                </a>
+                <a href="mailto:reservations@lumiere.com">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                    <span>reservations@lumiere.com</span>
+                </a>
             </div>
         </div>
         <div class="footer-bottom">
             <p class="copyright">&copy; 2026 Lumière. All rights reserved.</p>
             <div class="footer-links">
-                <a href="legal.html?tab=privacy">Privacy Policy</a>
-                <a href="legal.html?tab=terms">Terms of Service</a>
+                <a href="index.html">Home</a>
+                <a href="legal.html?tab=privacy">Privacy</a>
+                <a href="legal.html?tab=terms">Terms</a>
             </div>
         </div>
     </div>
@@ -1097,12 +1073,32 @@ const experienceLabels = {
 // Cache for availability so same date always gives same slots
 const availabilityCache = {};
 
-// ── Date setup ──────────────────────────────────────────────
-const todayDate = new Date();
-todayDate.setHours(0,0,0,0);
-const todayStr = todayDate.toISOString().split('T')[0];
+// ── DOM refs ────────────────────────────────────────────────
 const bookingDateInput = document.getElementById('bookingDate');
+
+// ── Date setup ──────────────────────────────────────────────
+// Get today's date in LOCAL timezone (not UTC)
+function getLocalTodayStr() {
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+}
+
+let todayStr = getLocalTodayStr();
+const todayDate = new Date(todayStr + 'T00:00:00');
+
 bookingDateInput.min = todayStr;
+
+// Refresh min date every minute so it auto-updates past midnight
+setInterval(() => {
+    const newToday = getLocalTodayStr();
+    if (newToday !== todayStr) {
+        todayStr = newToday;
+        bookingDateInput.min = todayStr;
+    }
+}, 60000);
 
 // ── URL params pre-select ───────────────────────────────────
 const urlParams = new URLSearchParams(window.location.search);
@@ -1120,37 +1116,61 @@ if (preSelected) {
 // ── Experience selection ────────────────────────────────────
 document.querySelectorAll('.experience-option').forEach(opt => {
     opt.addEventListener('click', () => {
+        const newExperience = opt.dataset.experience;
+        const isSwitch = newExperience !== bookingData.experience;
+
         document.querySelectorAll('.experience-option').forEach(o => o.classList.remove('selected'));
         opt.classList.add('selected');
-        bookingData.experience = opt.dataset.experience;
-        bookingData.experienceLabel = experienceLabels[opt.dataset.experience] || '';
+        bookingData.experience = newExperience;
+        bookingData.experienceLabel = experienceLabels[newExperience] || '';
 
-        // Reset party size when switching experience
-        const isPrivate   = bookingData.experience === 'private';
-        const isAlacarte  = bookingData.experience === 'alacarte';
+        const isPrivate  = newExperience === 'private';
+        const isAlacarte = newExperience === 'alacarte';
 
+        // Private dining enquiry note — show/hide based on experience
+        const pdNote = document.getElementById('privateDiningEnquiryNote');
         if (isPrivate) {
-            // Private dining — jump straight to 10 on first any-direction change
-            // but don't change yet, just prepare. Party stays at current until +/- pressed.
-            // Show enquiry note immediately
-            const pdNote = document.getElementById('privateDiningEnquiryNote');
             if (pdNote) { pdNote.classList.add('visible'); setTimeout(() => pdNote.classList.add('shown'), 10); }
         } else {
-            const pdNote = document.getElementById('privateDiningEnquiryNote');
             if (pdNote) { pdNote.classList.remove('shown'); setTimeout(() => pdNote.classList.remove('visible'), 400); }
         }
 
-        // Reset party to default on experience switch
-        if (isPrivate) {
-            bookingData.party = 10;
-        } else if (isAlacarte) {
-            bookingData.party = Math.min(bookingData.party, 6);
-        } else {
-            bookingData.party = Math.min(bookingData.party, 20);
-        }
-        document.getElementById('partyCount').textContent = bookingData.party;
+        // Reset dependent fields ONLY when switching to a different experience
+        if (isSwitch) {
+            // Reset party to default for the new experience
+            if (isPrivate) {
+                bookingData.party = 10;
+            } else {
+                bookingData.party = 2;
+            }
+            document.getElementById('partyCount').textContent = bookingData.party;
 
-        // Re-run notices and availability if date already selected
+            // Clear date
+            bookingDateInput.value = '';
+            bookingData.date = '';
+
+            // Clear time
+            bookingData.time = '';
+            document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+
+            // Hide large group + private dining min notices
+            const largeNotice = document.getElementById('largeGroupNotice');
+            const pdMinNotice = document.getElementById('privateDiningNotice');
+            if (largeNotice) { largeNotice.classList.remove('shown'); setTimeout(() => largeNotice.classList.remove('visible'), 500); }
+            if (pdMinNotice) { pdMinNotice.classList.remove('shown'); setTimeout(() => pdMinNotice.classList.remove('visible'), 500); }
+
+            // Hide slots section + no-availability state
+            const slotsContainer = document.getElementById('timeSlotsContainer');
+            const noAvail = document.getElementById('noAvailability');
+            const hint = document.getElementById('slotsHint');
+            if (slotsContainer) slotsContainer.style.display = 'none';
+            if (noAvail) noAvail.classList.remove('visible');
+            if (hint) hint.textContent = 'Select a date and party size to see availability';
+
+            isLargeGroup = false;
+        }
+
+        // Re-run notices and availability if date is still selected (same-experience re-click)
         checkLargeGroupNotice();
         const dateVal = bookingDateInput.value;
         if (dateVal) triggerAvailability(dateVal, bookingData.party);
@@ -1228,6 +1248,8 @@ function checkLargeGroupNotice() {
     // Private dining always treated as large group for slot logic
     if (isPrivate) {
         isLargeGroup = true;
+        notice.classList.remove('shown');
+        setTimeout(() => notice.classList.remove('visible'), 500);
         updateSlotsLabel(true);
         return;
     }
@@ -1297,6 +1319,7 @@ function applyAvailability(dateStr, party) {
 
     const slots = container.querySelectorAll('.time-slot');
     let availableCount = 0;
+    let pastCount      = 0;
 
     slots.forEach(slot => {
         const t = slot.dataset.time;
@@ -1304,6 +1327,7 @@ function applyAvailability(dateStr, party) {
 
         if (pastSlots.includes(t)) {
             slot.classList.add('past');
+            pastCount++;
         } else if (disabledSlots.includes(t)) {
             slot.classList.add('unavailable');
         } else {
@@ -1317,12 +1341,30 @@ function applyAvailability(dateStr, party) {
         container.style.display = 'none';
         noAvail.classList.add('visible');
         hint.textContent = '';
+
+        // Distinguish: time elapsed today vs genuinely fully booked
+        const titleEl = document.getElementById('noAvailTitle');
+        const textEl  = document.getElementById('noAvailText');
+
+        if (pastCount === slots.length) {
+            // All slots are in the past — same-day too late
+            titleEl.textContent = 'Service has ended for today';
+            textEl.textContent  = 'It is now too late in the evening to reserve a table for tonight. Please choose one of the nearest available dates below:';
+        } else {
+            // Some non-past slots exist but all are booked
+            titleEl.textContent = 'No availability for this date';
+            textEl.textContent  = 'All time slots are fully booked for your selected date. Try one of the nearest available dates below:';
+        }
+
         suggestNearestDates(dateStr, party);
+
     } else {
         noAvail.classList.remove('visible');
         hint.textContent = isLarge
             ? 'Select your preferred time — subject to confirmation'
-            : `${availableCount} time${availableCount > 1 ? 's' : ''} available`;
+            : (availableCount === slots.length
+                ? 'All slots available'
+                : `${availableCount} slot${availableCount > 1 ? 's' : ''} available`);
     }
 }
 
@@ -1550,7 +1592,7 @@ function goToStep(step) {
             reminder.classList.add('visible');
             confirmBtnText.textContent = 'Request Reservation';
             confirmBtnIcon.innerHTML = '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>';
-            summaryNote.textContent = 'This is a large group request. Our team will review availability and contact you within 2 hours to confirm.';
+            summaryNote.textContent = 'A confirmation request will be sent to your email address.';
         } else {
             reminder.classList.remove('visible');
             confirmBtnText.textContent = 'Confirm Reservation';
@@ -1692,6 +1734,9 @@ function submitReservation() {
         restaurant_phone: '+33 1 23 45 67 89',
         restaurant_email: 'reservations@lumiere.com',
         email_type:       isLargeGroup ? 'large_group' : 'confirmation',
+        subject_line:     isLargeGroup ? 'Reservation Request Received — Lumière' : 'Reservation confirmed — Lumière',
+        is_pending:       isLargeGroup ? 'YES' : '',
+        is_confirmed:     isLargeGroup ? '' : 'YES',
         is_modification:  '',
         is_cancellation:  '',
         cancellation_reason: '',
