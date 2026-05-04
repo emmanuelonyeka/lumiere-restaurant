@@ -776,10 +776,15 @@ function handleReasonChange() {
     }
 }
 
-// ── Keep reservation → go back ───────────────────────────────
+// ── Keep reservation → go back safely ────────────────────────
 function keepReservation() {
-    if (window.history.length > 1) window.history.back();
-    else window.location.href = 'index.html';
+    const cameFromOurSite = document.referrer &&
+                            new URL(document.referrer).hostname === window.location.hostname;
+    if (cameFromOurSite && window.history.length > 1) {
+        window.history.back();
+    } else {
+        window.location.href = 'index.html';
+    }
 }
 
 // ── Confirm cancellation ─────────────────────────────────────
