@@ -12,6 +12,7 @@ https://emmanuelonyeka.github.io/lumiere-restaurant
 - Reservation page
 - Fully responsive design
 - Smooth scrolling navigation
+- Real Booking System with email to staff and client
 
 ## Technologies Used
 - HTML5
