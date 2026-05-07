@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initMagneticButtons();
     initScrollAnimations();
     initMenuFiltering();
+    initMenuAccordion();
     initSmoothScroll();
     initGalleryFilter();
     initParallaxEffect();
@@ -390,6 +391,10 @@ function initMenuFiltering() {
             btn.classList.add('active');
 
             const category = btn.dataset.category;
+            // Tell accordion which section to expand on mobile
+            if (typeof window.__menuAccordionSetCategory === 'function') {
+                window.__menuAccordionSetCategory(category);
+            }
 
             // Headings
             menuHeadings.forEach(heading => {
@@ -423,21 +428,113 @@ function initMenuFiltering() {
                     // Unhide and reset to start state
                     item.classList.remove('hidden');
                     item.style.transitionDelay = '0s';
+                    item.style.transition = 'none';
                     item.style.opacity = '0';
                     item.style.transform = 'translateY(20px)';
 
-                    // Two frames to ensure start state is painted
+                    // Force reflow so the browser registers the start state
+                    void item.offsetHeight;
+
+                    // Re-enable transition and animate to end state
+                    item.style.transition = '';
                     requestAnimationFrame(() => {
-                        requestAnimationFrame(() => {
-                            item.style.transitionDelay = `${i * 50}ms`;
-                            item.style.opacity = '1';
-                            item.style.transform = 'translateY(0)';
-                        });
+                        item.style.transitionDelay = `${i * 50}ms`;
+                        item.style.opacity = '1';
+                        item.style.transform = 'translateY(0)';
                     });
                 });
-            }, outgoing.length ? 300 : 0);
+            }, (outgoing.length && window.matchMedia('(min-width: 769px)').matches) ? 300 : 0);
         });
     });
+}
+
+/**
+ * ========================================
+ * MOBILE MENU ACCORDION
+ * ========================================
+ */
+function initMenuAccordion() {
+    const grid = document.querySelector('.menu-grid');
+    if (!grid) return;
+
+    const headings = Array.from(grid.querySelectorAll('.menu-heading'));
+    if (!headings.length) return;
+
+    const showAllBtn = document.getElementById('menuShowAll');
+
+    // Build a map: heading -> [items belonging to it]
+    const sections = headings.map((heading, i) => {
+        const next = headings[i + 1] || null;
+        const items = [];
+        let node = heading.nextElementSibling;
+        while (node && node !== next) {
+            if (node.classList.contains('menu-item')) items.push(node);
+            node = node.nextElementSibling;
+        }
+        return { heading, items, key: heading.dataset.heading };
+    });
+
+    let showAllMode = false;
+
+    // Apply collapsed/open state based on which heading should be open
+    function applyState(openKey) {
+        sections.forEach(sec => {
+            const open = showAllMode || sec.key === openKey;
+            sec.heading.classList.toggle('is-open', open);
+            sec.items.forEach(item => {
+                item.classList.toggle('is-collapsed', !open);
+            });
+        });
+    }
+
+    // Default: first section open
+    let currentOpen = sections[0].key;
+    applyState(currentOpen);
+
+    // Heading click → toggle accordion (mobile only via CSS, but JS guards too)
+    headings.forEach(heading => {
+        heading.addEventListener('click', () => {
+            if (window.matchMedia('(min-width: 769px)').matches) return;
+            if (showAllMode) return; // ignore taps when in show-all
+
+            const key = heading.dataset.heading;
+            currentOpen = (currentOpen === key) ? null : key;
+            applyState(currentOpen);
+        });
+    });
+
+    // Show All toggle
+    if (showAllBtn) {
+        showAllBtn.addEventListener('click', () => {
+            showAllMode = !showAllMode;
+            showAllBtn.classList.toggle('is-active', showAllMode);
+            showAllBtn.textContent = showAllMode ? 'Collapse Sections' : 'Show All Sections';
+            if (!showAllMode && !currentOpen) currentOpen = sections[0].key;
+            applyState(currentOpen);
+        });
+    }
+
+    // Hook for the existing category filter to control accordion
+    window.__menuAccordionSetCategory = function(category) {
+        if (window.matchMedia('(min-width: 769px)').matches) return;
+        if (category === 'all') {
+            showAllMode = false;
+            if (showAllBtn) {
+                showAllBtn.classList.remove('is-active');
+                showAllBtn.textContent = 'Show All Sections';
+            }
+            currentOpen = sections[0].key;
+            applyState(currentOpen);
+        } else {
+            showAllMode = false;
+            if (showAllBtn) {
+                showAllBtn.classList.remove('is-active');
+                showAllBtn.textContent = 'Show All Sections';
+            }
+            currentOpen = category;
+            applyState(currentOpen);
+        }
+    };
 }
 
 /**
@@ -1119,6 +1216,41 @@ function initSweepLabels() {
         }
     });
 }
+
+// ── Allergen tag tap-to-toggle (touch devices only) ─────────
+(function() {
+    // Detect touch capability
+    const isTouch = window.matchMedia('(hover: none)').matches;
+    if (!isTouch) return;
+
+    let activeTag = null;
+
+    document.addEventListener('click', (e) => {
+        const tag = e.target.closest('.allergen-tag');
+
+        // Tapped a tag
+        if (tag) {
+            e.stopPropagation();
+            // Same tag → toggle off
+            if (tag === activeTag) {
+                tag.classList.remove('is-active');
+                activeTag = null;
+                return;
+            }
+            // Different tag → close previous, open new
+            if (activeTag) activeTag.classList.remove('is-active');
+            tag.classList.add('is-active');
+            activeTag = tag;
+            return;
+        }
+
+        // Tapped outside any tag → close active one
+        if (activeTag) {
+            activeTag.classList.remove('is-active');
+            activeTag = null;
+        }
+    });
+})();
 
 /**
  * ========================================

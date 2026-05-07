@@ -1856,16 +1856,33 @@ button {
     position: relative;
 }
 
-.allergen-tag:hover {
+/* Hover state — desktop only (devices with hover capability) */
+@media (hover: hover) {
+    .allergen-tag:hover {
+        background: var(--color-gold-muted);
+        border-color: var(--color-gold);
+    }
+    .allergen-tag:hover::after,
+    .allergen-tag:hover::before {
+        opacity: 1;
+    }
+}
+
+/* Active state — for touch devices (toggled via JS) */
+.allergen-tag.is-active {
     background: var(--color-gold-muted);
     border-color: var(--color-gold);
+}
+.allergen-tag.is-active::after,
+.allergen-tag.is-active::before {
+    opacity: 1;
 }
 
 /* Tooltip on hover */
 .allergen-tag::after {
     content: attr(data-label);
     position: absolute;
-    bottom: calc(100% + 6px);
+    bottom: calc(100% + 9px);
     left: 50%;
     transform: translateX(-50%);
     background: var(--color-bg-elevated);
@@ -1884,8 +1901,22 @@ button {
     text-transform: none;
 }
 
-.allergen-tag:hover::after {
-    opacity: 1;
+/* Tooltip arrow */
+.allergen-tag::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid var(--color-border);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 10;
 }
 
 .allergen-key {
@@ -1930,6 +1961,73 @@ button {
 
 .menu-heading.hidden {
     display: none;
+}
+
+/* ── Mobile accordion for menu sections ─────────────── */
+@media (max-width: 768px) {
+
+    /* Heading becomes a tappable button-like row */
+    .menu-heading {
+        cursor: pointer;
+        user-select: none;
+        position: relative;
+        padding-right: 2.5rem;
+        transition: color 0.3s ease;
+    }
+
+    /* Chevron indicator */
+    .menu-heading::before {
+        content: '';
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        width: 9px;
+        height: 9px;
+        border-right: 1.5px solid var(--color-gold);
+        border-bottom: 1.5px solid var(--color-gold);
+        transform: translateY(-75%) rotate(45deg);
+        transition: transform 0.35s ease;
+    }
+
+    .menu-heading.is-open::before {
+        transform: translateY(-25%) rotate(-135deg);
+    }
+
+    /* Items belonging to a closed section */
+    .menu-item.is-collapsed {
+        display: none;
+    }
+
+    /* Show-all toggle — sits below category buttons */
+    .menu-show-all {
+        display: block;
+        margin: 0 auto var(--space-6) auto;
+        padding: 6px 16px;
+        background: transparent;
+        border: 1px solid rgba(198, 167, 105, 0.35);
+        border-radius: var(--radius-sm);
+        color: var(--color-gold);
+        font-family: var(--font-sans);
+        font-size: 0.65rem;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .menu-show-all:hover,
+    .menu-show-all.is-active {
+        background: var(--color-gold-muted);
+        border-color: var(--color-gold);
+    }
+}
+
+/* Hide show-all toggle on desktop */
+@media (min-width: 769px) {
+    .menu-show-all {
+        display: none;
+    }
 }
 
 .menu-item {
