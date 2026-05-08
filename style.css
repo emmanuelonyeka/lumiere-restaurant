@@ -2475,6 +2475,7 @@ button {
 
 .press-logo-item:hover {
     opacity: 0.7;
+    cursor: pointer;
 }
 
 .press-logo-svg {
