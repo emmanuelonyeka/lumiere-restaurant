@@ -410,7 +410,7 @@ button {
     padding: var(--space-3) var(--space-6);
     border: 1px solid var(--color-gold);
     border-radius: var(--radius-sm);
-    transition: color 0.3s ease 0.4s;
+    transition: color 0.3s ease 0.35s;
     position: relative;
     overflow: hidden;
 }

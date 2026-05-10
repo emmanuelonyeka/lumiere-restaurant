@@ -840,6 +840,13 @@ function initHeroAmbience() {
     let currentTrackIndex = 0;
     let lastTrackIndex = 0;
     let audio = new Audio(tracks[0]);
+
+    // Quietly disable the feature if audio files don't exist
+    audio.addEventListener('error', () => {
+        const toggle = document.getElementById('audioToggle');
+        if (toggle) toggle.style.display = 'none';
+    }, { once: true });
+
     audio.loop = false;
     audio.volume = 0;
 
@@ -1253,10 +1260,11 @@ function initSweepLabels() {
 })();
 
 /**
- * ========================================
+ * ======================================== ;
  * CONSOLE WELCOME
+ * (Optional brand signature shown when developers open the browser
+ * console. Customize the text below or delete this entire block.)
  * ========================================
  */
 console.log('%c🍽️ Lumière Fine Dining', 'font-size: 24px; font-weight: bold; color: #C6A769;');
 console.log('%cA culinary experience crafted with passion.', 'font-size: 14px; color: #C9C3B8;');
-console.log('%cFor reservations: +33 1 23 45 67 89', 'font-size: 12px; color: #9A958A;');

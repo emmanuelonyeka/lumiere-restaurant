@@ -9,9 +9,11 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="favicon.svg">
 
+    <script src="config.js"></script>
+
     <!-- EmailJS -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script>(function(){ emailjs.init("RWnXJqkGSNcLpgYlv"); })();</script>
+    <script>(function(){ emailjs.init(window.LUMIERE_CONFIG.emailjs.publicKey); })();</script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -766,7 +768,7 @@
 
         <!-- Header -->
         <div class="modify-header">
-            <a href="javascript:history.back()" class="back-link">
+            <a href="javascript:void(0)" onclick="goBackSafely()" class="back-link">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
                 <span>Go Back</span>
             </a>
@@ -932,7 +934,7 @@
 
             <!-- Submit -->
             <div class="submit-row">
-                <a href="javascript:history.back()" class="btn-cancel-modify">Keep Original Booking</a>
+                <a href="javascript:void(0)" onclick="goBackSafely()" class="btn-cancel-modify">Keep Original Booking</a>
                 <button class="btn-submit-modify" onclick="submitModification()" type="button">
                     <span id="submitBtnText">Submit Modification</span>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -984,10 +986,10 @@
 // LUMIÈRE MODIFY RESERVATION PAGE
 // ═══════════════════════════════════════════════════════════
 
-const SERVICE_ID      = 'lumiere-service';
-const TEMPLATE_STAFF  = 'template_8dzz3nu';
-const TEMPLATE_GUEST  = 'template_xkb0vwz';
-const WHATSAPP_NUMBER = '2348057659583';
+const SERVICE_ID      = window.LUMIERE_CONFIG.emailjs.serviceId;
+const TEMPLATE_STAFF  = window.LUMIERE_CONFIG.emailjs.staffTemplate;
+const TEMPLATE_GUEST  = window.LUMIERE_CONFIG.emailjs.guestTemplate;
+const WHATSAPP_NUMBER = window.LUMIERE_CONFIG.whatsappNumber;
 
 const ALL_SLOTS           = ['17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30','21:00','21:30'];
 const LARGE_GROUP_BLOCKED = ['17:00','17:30','18:00','18:30','19:00'];
@@ -1088,6 +1090,16 @@ function buildAndInit() {
 
     document.getElementById('mainPage').style.display = 'block';
     initModifyForm();
+}
+
+function goBackSafely() {
+    const cameFromOurSite = document.referrer && 
+                            new URL(document.referrer).hostname === window.location.hostname;
+    if (cameFromOurSite && window.history.length > 1) {
+        window.history.back();
+    } else {
+        window.location.href = 'index.html';
+    }
 }
 
 // ── showInvalid helper ────────────────────────────────────────
@@ -1495,7 +1507,7 @@ function submitModification() {
     const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${waMsg}`;
 
     // Template params
-    const baseUrl = 'https://emmanuelonyeka.github.io/lumiere-restaurant';
+    const baseUrl = window.LUMIERE_CONFIG.baseUrl;
     const bookingParams = `id=${bookingId}&email=${encodeURIComponent(em)}&name=${encodeURIComponent(newName)}&experience=${encodeURIComponent(ob.experienceLabel || ob.experience)}&date=${encodeURIComponent(newFormattedDate)}&time=${encodeURIComponent(newFormattedTime)}&party=${encodeURIComponent(newPartyStr)}&occasion=${encodeURIComponent(newOccLabel)}`;
 
     const templateParams = {

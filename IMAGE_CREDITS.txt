@@ -1,0 +1,14 @@
+IMAGE & MEDIA CREDITS
+=====================
+
+All bundled photographs and videos in this template are 
+AI-generated using Kimi AI, Grok AI, and Runway AI, then 
+provided as demonstration content only.
+
+These demo files are intended to give buyers a complete preview 
+of how the template looks fully populated. Buyers should replace 
+all bundled media with their own photography or properly 
+licensed assets before deploying the template to a live website.
+
+The audio folder ships empty — see audio/README.txt for 
+guidance on adding your own royalty-free tracks.

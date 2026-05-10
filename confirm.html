@@ -8,9 +8,11 @@
 
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
 
+    <script src="config.js"></script>
+
     <!-- EmailJS -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script>(function(){ emailjs.init("RWnXJqkGSNcLpgYlv"); })();</script>
+    <script>(function(){ emailjs.init(window.LUMIERE_CONFIG.emailjs.publicKey); })();</script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -607,8 +609,9 @@
 // LUMIÈRE STAFF CONFIRM PORTAL
 // ═══════════════════════════════════════════════════════════
 
-const SERVICE_ID       = 'lumiere-service';
-const TEMPLATE_CONFIRM = 'template_xkb0vwz'; // guest template — sends confirmation to guest
+const SERVICE_ID       = window.LUMIERE_CONFIG.emailjs.serviceId;
+const TEMPLATE_CONFIRM = window.LUMIERE_CONFIG.emailjs.guestTemplate; // guest template — sends confirmation to guest
+const WHATSAPP_NUMBER = window.LUMIERE_CONFIG.whatsappNumber;
 
 // Read URL params
 const params      = new URLSearchParams(window.location.search);
@@ -750,7 +753,7 @@ function confirmReservation() {
     document.getElementById('confirmQuestion').style.display = 'none';
     document.getElementById('sendingState').classList.add('visible');
 
-    const baseUrl = 'https://emmanuelonyeka.github.io/lumiere-restaurant';
+    const baseUrl = window.LUMIERE_CONFIG.baseUrl;
     const bookingParams = `id=${bookingId}&email=${encodeURIComponent(guestEmail)}&name=${encodeURIComponent(guestName)}&experience=${encodeURIComponent(experience)}&date=${encodeURIComponent(date)}&time=${encodeURIComponent(time)}&party=${encodeURIComponent(partySize)}&occasion=${encodeURIComponent(occasion || '')}`;
 
     const templateParams = {
@@ -777,7 +780,7 @@ function confirmReservation() {
         confirm_url:     `${baseUrl}/confirm.html?${bookingParams}`,
         cancel_url:      `${baseUrl}/cancel.html?${bookingParams}`,
         modify_url:      `${baseUrl}/modify.html?id=${bookingId}`,
-        whatsapp_url:    `https://wa.me/2348057659583`,
+        whatsapp_url:    `https://wa.me/${WHATSAPP_NUMBER}`,
         original_date: '', original_time: '', original_party: '',
         original_name: '', original_email: '', original_phone: '',
         original_occasion: '', original_requests: '',

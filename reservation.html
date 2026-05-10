@@ -6,27 +6,29 @@
     <title>Reserve a Table | Lumière Fine Dining — Paris</title>
     <meta name="description" content="Reserve your table at Lumière. Choose from our Chef's Tasting Menu, Wine Pairing Journey, or exclusive Private Dining. Two Michelin-star experience in Paris.">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://www.lumiere-restaurant.com/reservation.html">
+    <link rel="canonical" href="https://YOUR-DOMAIN-HERE.com/reservation.html">
 
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="favicon.svg">
 
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.lumiere-restaurant.com/reservation.html">
+    <meta property="og:url" content="https://YOUR-DOMAIN-HERE.com/reservation.html">
     <meta property="og:title" content="Reserve a Table | Lumière Fine Dining">
     <meta property="og:description" content="Reserve your table at Lumière — two Michelin-star fine dining in Paris.">
-    <meta property="og:image" content="https://www.lumiere-restaurant.com/images/private-dining.jpg">
+    <meta property="og:image" content="https://YOUR-DOMAIN-HERE.com/images/private-dining.jpg">
     <meta property="og:site_name" content="Lumière Fine Dining">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Reserve a Table | Lumière Fine Dining">
     <meta name="twitter:description" content="Reserve your table at Lumière — two Michelin-star fine dining in Paris.">
-    <meta name="twitter:image" content="https://www.lumiere-restaurant.com/images/private-dining.jpg">
+    <meta name="twitter:image" content="https://YOUR-DOMAIN-HERE.com/images/private-dining.jpg">
+
+    <script src="config.js"></script>
 
     <!-- EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
-        (function(){ emailjs.init("RWnXJqkGSNcLpgYlv"); })();
+        (function(){ emailjs.init(window.LUMIERE_CONFIG.emailjs.publicKey); })();
     </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1031,10 +1033,10 @@
 // LUMIÈRE RESERVATION SYSTEM — FULL LOGIC
 // ═══════════════════════════════════════════════════════════
 
-const WHATSAPP_NUMBER = '2348057659583';
-const SERVICE_ID      = 'lumiere-service';
-const TEMPLATE_STAFF  = 'template_8dzz3nu';
-const TEMPLATE_GUEST  = 'template_xkb0vwz';
+const WHATSAPP_NUMBER = window.LUMIERE_CONFIG.whatsappNumber;
+const SERVICE_ID      = window.LUMIERE_CONFIG.emailjs.serviceId;
+const TEMPLATE_STAFF  = window.LUMIERE_CONFIG.emailjs.staffTemplate;
+const TEMPLATE_GUEST  = window.LUMIERE_CONFIG.emailjs.guestTemplate;
 
 // All 10 time slots
 const ALL_SLOTS = ['17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30','21:00','21:30'];
@@ -1261,7 +1263,7 @@ function checkLargeGroupNotice() {
             notice.classList.add('visible');
             setTimeout(() => notice.classList.add('shown'), 10);
             updateSlotsLabel(true);
-        }, 1500);
+        }, 800);
     } else {
         isLargeGroup = false;
         notice.classList.remove('shown');
@@ -1702,7 +1704,7 @@ function submitReservation() {
     }
 
     // Build base URL for email action buttons
-    const baseUrl = 'https://emmanuelonyeka.github.io/lumiere-restaurant';
+    const baseUrl = window.LUMIERE_CONFIG.baseUrl;
     const bookingParams = `id=${bookingData.bookingId}&email=${encodeURIComponent(bookingData.email)}&name=${encodeURIComponent(bookingData.firstName + ' ' + bookingData.lastName)}&experience=${encodeURIComponent(bookingData.experienceLabel)}&date=${encodeURIComponent(fd)}&time=${encodeURIComponent(ft)}&party=${encodeURIComponent(bookingData.party + (bookingData.party === 1 ? ' Guest' : ' Guests'))}&occasion=${encodeURIComponent(occasionText)}`;
 
     const modifyParams = `id=${bookingData.bookingId}&email=${encodeURIComponent(bookingData.email)}&name=${encodeURIComponent(bookingData.firstName + ' ' + bookingData.lastName)}&experience=${encodeURIComponent(bookingData.experienceLabel)}&date=${encodeURIComponent(bookingData.date)}&fdate=${encodeURIComponent(fd)}&time=${encodeURIComponent(bookingData.time)}&ftime=${encodeURIComponent(ft)}&party=${bookingData.party}&occasion=${encodeURIComponent(occasionText)}&phone=${encodeURIComponent(bookingData.phone || '')}&requests=${encodeURIComponent(bookingData.specialRequests || '')}&large=${isLargeGroup ? '1' : '0'}`;
