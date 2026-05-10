@@ -1,0 +1,65 @@
+# ============================================================
+# Lumière Template — Git Ignore
+# ============================================================
+# Files and folders that should never be committed to source
+# control. Edit as needed for your workflow.
+# ============================================================
+
+
+# ── macOS ───────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+
+# ── Windows ─────────────────────────────────────────────────
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+
+
+# ── Linux ───────────────────────────────────────────────────
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+
+# ── Editors & IDEs ──────────────────────────────────────────
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+.claude/
+.cursor/
+
+
+# ── Logs & temp files ───────────────────────────────────────
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+
+
+# ── Local environment files ─────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+
+# ── Node (only relevant if you add a build step later) ──────
+node_modules/
+package-lock.json
+
+
+# ── Build output (only if you add tooling later) ────────────
+dist/
+build/
+.cache/
