@@ -381,7 +381,7 @@ function triggerHeroAnimations() {
  * ========================================
  */
 function initMenuFiltering() {
-    const categoryBtns = document.querySelectorAll('.category-btn');
+    const categoryBtns = document.querySelectorAll('.menu-categories:not(.gallery-categories) .category-btn');
     const menuItems    = document.querySelectorAll('.menu-item');
     const menuHeadings = document.querySelectorAll('.menu-heading');
 
@@ -498,8 +498,18 @@ function initMenuAccordion() {
             if (showAllMode) return; // ignore taps when in show-all
 
             const key = heading.dataset.heading;
-            currentOpen = (currentOpen === key) ? null : key;
+            const wasOpen = currentOpen;
+            const tappingSameOne = (currentOpen === key);
+
+            currentOpen = tappingSameOne ? null : key;
             applyState(currentOpen);
+            
+            if (wasOpen && !tappingSameOne) {
+                // Wait for layout to settle (collapsing items shifts the page)
+                requestAnimationFrame(() => {
+                    heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            }
         });
     });
 

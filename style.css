@@ -1973,6 +1973,7 @@ button {
         position: relative;
         padding-right: 2.5rem;
         transition: color 0.3s ease;
+        scroll-margin-top: 80px;
     }
 
     /* Chevron indicator */
