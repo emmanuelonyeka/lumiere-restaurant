@@ -183,12 +183,24 @@ function initNavigation() {
         }
     }, { passive: true });
 
-    // Reset nav on resize
+    // Reset nav on resize — only act when the mobile menu is actually open
+    // and the user has resized past the desktop breakpoint. Avoids spurious
+    // scroll jumps and flashes when resizing the window normally.
     let resizeTimer;
+    let resizeFlashTimer;
     window.addEventListener('resize', () => {
+        // Suppress the menu's transform transition during resize so the menu
+        // doesn't slide visibly when crossing the desktop breakpoint
+        navMenu.classList.add('no-transition');
+        clearTimeout(resizeFlashTimer);
+        resizeFlashTimer = setTimeout(() => {
+            navMenu.classList.remove('no-transition');
+        }, 250);
+
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
-            if (window.innerWidth > 1024) {
+            // Only intervene if the menu is currently open AND we're now on desktop
+            if (window.innerWidth > 1024 && navMenu.classList.contains('active')) {
                 navToggle.classList.remove('active');
                 navMenu.classList.remove('active');
                 document.body.style.overflow = '';
@@ -201,7 +213,7 @@ function initNavigation() {
                     document.documentElement.style.scrollBehavior = '';
                 }, 0);
             }
-        }, 150);
+        }, 100);
     });
 }
 
@@ -503,7 +515,7 @@ function initMenuAccordion() {
 
             currentOpen = tappingSameOne ? null : key;
             applyState(currentOpen);
-            
+
             if (wasOpen && !tappingSameOne) {
                 // Wait for layout to settle (collapsing items shifts the page)
                 requestAnimationFrame(() => {
@@ -565,26 +577,52 @@ function initGalleryFilter() {
 
             const filter = btn.dataset.gallery;
 
-            galleryItems.forEach((item, index) => {
+            // Split items into outgoing and incoming based on the new filter
+            const outgoing = [];
+            const incoming = [];
+            galleryItems.forEach(item => {
                 const itemCat = item.dataset.gallery;
                 const matches = filter === 'all' || itemCat === filter;
+                const isCurrentlyVisible = !item.classList.contains('gallery-hidden');
 
-                if (matches) {
+                if (matches && !isCurrentlyVisible)      incoming.push(item);
+                else if (!matches && isCurrentlyVisible) outgoing.push(item);
+                else if (matches && isCurrentlyVisible)  incoming.push(item); // re-stagger
+            });
+
+            // Phase 1 — fade out everything that doesn't belong
+            outgoing.forEach(item => {
+                item.style.transitionDelay = '0s';
+                item.style.opacity = '0';
+                item.style.transform = 'scale(0.97)';
+            });
+
+            // Phase 2 — after outgoing is gone, hide them and fade incoming in
+            setTimeout(() => {
+                outgoing.forEach(item => {
+                    item.classList.add('gallery-hidden');
+                });
+
+                incoming.forEach((item, index) => {
                     item.classList.remove('gallery-hidden');
-                    item.style.transitionDelay = `${index * 0.04}s`;
+                    // Force start state instantly (no animation to the start)
+                    item.style.transitionDelay = '0s';
+                    item.style.transition = 'none';
+                    item.style.opacity = '0';
+                    item.style.transform = 'scale(0.97)';
+
+                    // Force reflow so the start state is registered
+                    void item.offsetHeight;
+
+                    // Re-enable transition and animate in with stagger
+                    item.style.transition = '';
                     requestAnimationFrame(() => {
+                        item.style.transitionDelay = `${index * 0.04}s`;
                         item.style.opacity = '1';
                         item.style.transform = 'scale(1)';
                     });
-                } else {
-                    item.style.opacity = '0';
-                    item.style.transform = 'scale(0.97)';
-                    setTimeout(() => {
-                        item.classList.add('gallery-hidden');
-                        item.style.transitionDelay = '0s';
-                    }, 350);
-                }
-            });
+                });
+            }, outgoing.length ? 350 : 0);
         });
     });
 }

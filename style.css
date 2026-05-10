@@ -526,6 +526,11 @@ button {
         transform: translateX(0);
     }
 
+    /* Suppress transition during resize to prevent breakpoint flash */
+    .nav-menu.no-transition {
+        transition: none !important;
+    }
+
     .nav-link {
         font-size: var(--text-2xl);
         font-family: var(--font-serif);
