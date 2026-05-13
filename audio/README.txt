@@ -1,9 +1,11 @@
 AUDIO FILES
 ===========
 
-This folder is intentionally empty. The Lumière template includes a 
-hero ambient sound feature, but no audio files are bundled with the 
-template.
+This folder contains three 1-second silent placeholder MP3s. They 
+ensure the hero ambient sound feature initializes cleanly without 
+network errors. To enable actual audio on your site, replace the 
+three files (keeping the exact same filenames) with your own 
+royalty-free tracks.
 
 To enable ambient audio on your site:
 

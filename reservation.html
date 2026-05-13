@@ -249,6 +249,9 @@
             font-size:var(--text-xl); color:var(--color-text-tertiary);
             cursor:pointer; transition:all .3s ease;
             background:var(--color-bg-tertiary); flex-shrink:0;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
         }
         .party-btn:hover { border-color:var(--color-gold); color:var(--color-gold); }
         .party-count { font-family:var(--font-serif); font-size:var(--text-3xl); font-weight:400; color:var(--color-gold); min-width:50px; text-align:center; }
@@ -272,7 +275,18 @@
         }
 
         /* Slot states */
-        .time-slots { display:flex; flex-wrap:wrap; gap:var(--space-3); }
+        .time-slots { display:flex; flex-direction:column; gap:var(--space-5); }
+        .slot-group { display:flex; flex-wrap:wrap; gap:var(--space-3); }
+        .slot-service-label {
+            font-family:var(--font-serif);
+            font-style:italic;
+            font-size:var(--text-lg);
+            color:var(--color-gold);
+            letter-spacing:.05em;
+            padding-bottom:var(--space-2);
+            border-bottom:1px solid rgba(198, 167, 105, 0.2);
+            margin-bottom:var(--space-1);
+        }
         .time-slot {
             padding:var(--space-3) var(--space-5);
             font-family:var(--font-sans); font-size:var(--text-sm);
@@ -403,7 +417,7 @@
             cursor:pointer; transition:all .2s ease; border-bottom:1px solid var(--color-border);
         }
         .custom-option:last-child { border-bottom:none; }
-        .custom-option:hover { background:var(--color-gold-muted); color:var(--color-gold); padding-left:var(--space-3); }
+        .custom-option:hover { background:var(--color-gold-muted); color:var(--color-gold); padding-left:var(--space-4); }
         .custom-option.selected { color:var(--color-gold); background:var(--color-gold-muted); }
         .custom-select.drop-up .custom-select-options { top:auto; bottom:calc(100% + var(--space-2)); transform:translateY(10px); }
         .custom-select.drop-up.open .custom-select-options { transform:translateY(0); }
@@ -829,19 +843,8 @@
                     <span class="slots-loader-text">Checking availability...</span>
                 </div>
 
-                <!-- Slots grid -->
-                <div class="time-slots" id="timeSlotsContainer" style="display:none;">
-                    <button class="time-slot" data-time="17:00" type="button">5:00 PM</button>
-                    <button class="time-slot" data-time="17:30" type="button">5:30 PM</button>
-                    <button class="time-slot" data-time="18:00" type="button">6:00 PM</button>
-                    <button class="time-slot" data-time="18:30" type="button">6:30 PM</button>
-                    <button class="time-slot" data-time="19:00" type="button">7:00 PM</button>
-                    <button class="time-slot" data-time="19:30" type="button">7:30 PM</button>
-                    <button class="time-slot" data-time="20:00" type="button">8:00 PM</button>
-                    <button class="time-slot" data-time="20:30" type="button">8:30 PM</button>
-                    <button class="time-slot" data-time="21:00" type="button">9:00 PM</button>
-                    <button class="time-slot" data-time="21:30" type="button">9:30 PM</button>
-                </div>
+                <!-- Slots grid (populated dynamically by JS based on selected date) -->
+                <div class="time-slots" id="timeSlotsContainer" style="display:none;"></div>
 
                 <!-- No availability -->
                 <div class="no-availability" id="noAvailability">
@@ -909,7 +912,6 @@
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
                         </div>
                         <div class="custom-select-options" id="occasionOptions">
-                            <div class="custom-option" data-value="">Select an occasion (optional)</div>
                             <div class="custom-option" data-value="anniversary">Anniversary</div>
                             <div class="custom-option" data-value="birthday">Birthday Celebration</div>
                             <div class="custom-option" data-value="proposal">Proposal</div>
@@ -1038,11 +1040,34 @@ const SERVICE_ID      = window.LUMIERE_CONFIG.emailjs.serviceId;
 const TEMPLATE_STAFF  = window.LUMIERE_CONFIG.emailjs.staffTemplate;
 const TEMPLATE_GUEST  = window.LUMIERE_CONFIG.emailjs.guestTemplate;
 
-// All 10 time slots
-const ALL_SLOTS = ['17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30','21:00','21:30'];
+// Time slots are now generated per-date based on opening hours (see config.js).
+// LumiereHours.getSlotsForDate(dateStr) returns the slot list for any date.
 
-// Early slots disabled for large groups
-const LARGE_GROUP_BLOCKED = ['17:00','17:30','18:00','18:30','19:00'];
+/**
+ * For a given date's slot list, returns the subset that should be blocked
+ * for large groups. Definition: the first 60 minutes of each service window
+ * (e.g. 17:00–18:00 for weekday dinner, 12:00–13:00 for Sunday lunch).
+ * This preserves the "restaurant needs prep time for large parties" intent
+ * across all service windows, not just hardcoded early dinner slots.
+ */
+ function getLargeGroupBlockedSlots(dateStr) {
+    const schedule = window.LumiereHours.getScheduleForDate(dateStr);
+    if (schedule.closed) return [];
+
+    const blocked = [];
+    schedule.services.forEach(service => {
+        const [sh, sm] = service.start.split(':').map(Number);
+        const startMin = sh * 60 + sm;
+        // Block the first hour (2 × 30-min slots): start, start+30
+        for (let offset = 0; offset < 60; offset += 30) {
+            const m = startMin + offset;
+            const hh = String(Math.floor(m / 60)).padStart(2, '0');
+            const mm = String(m % 60).padStart(2, '0');
+            blocked.push(`${hh}:${mm}`);
+        }
+    });
+    return blocked;
+}
 
 let currentStep = 1;
 let isLargeGroup = false;
@@ -1077,6 +1102,7 @@ const availabilityCache = {};
 
 // ── DOM refs ────────────────────────────────────────────────
 const bookingDateInput = document.getElementById('bookingDate');
+initDatePicker(bookingDateInput);
 
 // ── Date setup ──────────────────────────────────────────────
 // Get today's date in LOCAL timezone (not UTC)
@@ -1314,6 +1340,9 @@ function applyAvailability(dateStr, party) {
     const noAvail   = document.getElementById('noAvailability');
     const hint      = document.getElementById('slotsHint');
 
+    // Render fresh buttons for this date's slots (grouped by service)
+    renderTimeSlots(dateStr);
+
     const isPrivate = bookingData.experience === 'private';
     const isLarge   = party > 6 || isPrivate;
     const disabledSlots = getDisabledSlots(dateStr, isLarge);
@@ -1380,21 +1409,34 @@ function seededRandom(seed) {
 }
 
 function getDisabledSlots(dateStr, isLargeGroupFlag) {
-    const isPrivate = bookingData.experience === 'private';
-    const cacheKey = `${dateStr}_${isPrivate ? 'private' : isLargeGroupFlag ? 'large' : 'small'}`;
-    if (availabilityCache[cacheKey]) return availabilityCache[cacheKey];
+    if (availabilityCache[dateStr + (isLargeGroupFlag ? '_lg' : '')]) {
+        return availabilityCache[dateStr + (isLargeGroupFlag ? '_lg' : '')];
+    }
 
-    const today    = new Date(); today.setHours(0,0,0,0);
-    const selected = new Date(dateStr + 'T00:00:00');
-    const daysAhead = Math.round((selected - today) / 86400000);
+    // Get the slot list for this specific date — varies by day of week
+    const daySlots = window.LumiereHours.getSlotsForDate(dateStr);
+    if (daySlots.length === 0) {
+        // Closed day — everything's disabled by definition (though this
+        // shouldn't trigger because the picker disables closed days)
+        availabilityCache[dateStr + (isLargeGroupFlag ? '_lg' : '')] = [];
+        return [];
+    }
+
+    // Large-group blocked slots also vary by date (first hour of each service)
+    const largeBlocked = getLargeGroupBlockedSlots(dateStr);
+
+    const today  = new Date(getLocalTodayStr() + 'T00:00:00');
+    const target = new Date(dateStr + 'T00:00:00');
+    const daysAhead = Math.floor((target - today) / (1000 * 60 * 60 * 24));
 
     let disabledSlots = [];
 
+    const isPrivate = bookingData.experience === 'private';
+
+    // Private dining always treated as large group for slot logic
     if (isPrivate) {
-        // Private dining: only block early slots for same-day and next-day
-        // Beyond that all slots available — it's a special experience
         if (daysAhead <= 1) {
-            disabledSlots = [...LARGE_GROUP_BLOCKED];
+            disabledSlots = [...largeBlocked];
         } else {
             disabledSlots = [];
         }
@@ -1405,8 +1447,8 @@ function getDisabledSlots(dateStr, isLargeGroupFlag) {
         // realistic — some slots taken by other diners, just not concentrated
         // at the early end.
         if (daysAhead <= 1) {
-            disabledSlots = [...LARGE_GROUP_BLOCKED];
-            const eveningSlots = ALL_SLOTS.filter(s => !LARGE_GROUP_BLOCKED.includes(s));
+            disabledSlots = [...largeBlocked];
+            const eveningSlots = daySlots.filter(s => !largeBlocked.includes(s));
             const seed = dateStr.replace(/-/g,'') * 7 + 999;
             const rand = seededRandom(parseInt(seed));
             const extraDisable = Math.floor(rand() * 2);
@@ -1424,12 +1466,12 @@ function getDisabledSlots(dateStr, isLargeGroupFlag) {
                 const seed = parseInt(dateStr.replace(/-/g,''));
                 const rand = seededRandom(seed);
                 const count = minDisable + Math.floor(rand() * (maxDisable - minDisable + 1));
-                const shuffled = [...ALL_SLOTS].sort(() => rand() - 0.5);
-                disabledSlots = shuffled.slice(0, count);
+                const shuffled = [...daySlots].sort(() => rand() - 0.5);
+                disabledSlots = shuffled.slice(0, Math.min(count, daySlots.length));
             }
         }
     } else {
-        // Small group — date proximity logic
+        // Small group: realistic-looking availability with date-proximity randomization
         let minDisable = 0, maxDisable = 0;
         if (daysAhead === 0)      { minDisable = 5; maxDisable = 7; }
         else if (daysAhead === 1) { minDisable = 4; maxDisable = 6; }
@@ -1438,35 +1480,34 @@ function getDisabledSlots(dateStr, isLargeGroupFlag) {
         else if (daysAhead === 4) { minDisable = 1; maxDisable = 3; }
         else if (daysAhead === 5) { minDisable = 1; maxDisable = 2; }
 
-        if (minDisable === 0 && maxDisable === 0) {
-            availabilityCache[cacheKey] = [];
-            return [];
+        if (minDisable > 0) {
+            const seed = parseInt(dateStr.replace(/-/g,''));
+            const rand = seededRandom(seed);
+            const count = minDisable + Math.floor(rand() * (maxDisable - minDisable + 1));
+            const shuffled = [...daySlots].sort(() => rand() - 0.5);
+            // Cap at daySlots.length so Sunday's 10 slots don't try to disable 7 when there are only 10
+            disabledSlots = shuffled.slice(0, Math.min(count, daySlots.length));
         }
-
-        const seed = parseInt(dateStr.replace(/-/g,''));
-        const rand = seededRandom(seed);
-        const count = minDisable + Math.floor(rand() * (maxDisable - minDisable + 1));
-        const shuffled = [...ALL_SLOTS].sort(() => rand() - 0.5);
-        disabledSlots = shuffled.slice(0, count);
     }
 
-    availabilityCache[cacheKey] = disabledSlots;
+    availabilityCache[dateStr + (isLargeGroupFlag ? '_lg' : '')] = disabledSlots;
     return disabledSlots;
 }
 
 // ── Past time slots for same-day ────────────────────────────
 function getPastSlots(dateStr) {
-    const today = new Date(); today.setHours(0,0,0,0);
-    const selected = new Date(dateStr + 'T00:00:00');
-    if (selected > today) return []; // future date — no past slots
+    const todayStr = getLocalTodayStr();
+    if (dateStr !== todayStr) return [];
 
-    // Same day: disable slots whose time has passed
     const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const nowMin = now.getHours() * 60 + now.getMinutes();
 
-    return ALL_SLOTS.filter(slot => {
+    // Get today's slot list (varies by day of week)
+    const todaySlots = window.LumiereHours.getSlotsForDate(dateStr);
+
+    return todaySlots.filter(slot => {
         const [h, m] = slot.split(':').map(Number);
-        return (h * 60 + m) <= currentMinutes;
+        return (h * 60 + m) <= nowMin;
     });
 }
 
@@ -1480,25 +1521,32 @@ function suggestNearestDates(dateStr, party) {
     const today = new Date(); today.setHours(0,0,0,0);
     const suggestions = [];
 
-    // Check forward and backward from selected date, up to 14 days each way
+    // Check forward and backward from selected date, up to 14 days each way.
+    // Skip closed days (Mondays) — they have no slots to suggest from.
     for (let delta = 1; delta <= 14 && suggestions.length < 3; delta++) {
         // Forward
         const fwd = new Date(base); fwd.setDate(fwd.getDate() + delta);
         if (suggestions.length < 3) {
             const fwdStr = fwd.toISOString().split('T')[0];
-            const fwdDisabled = getDisabledSlots(fwdStr, isLarge);
-            const fwdPast = getPastSlots(fwdStr);
-            const fwdAvail = ALL_SLOTS.filter(s => !fwdDisabled.includes(s) && !fwdPast.includes(s));
-            if (fwdAvail.length > 0) suggestions.push(fwdStr);
+            if (!window.LumiereHours.isClosedDay(fwdStr)) {
+                const fwdSlots = window.LumiereHours.getSlotsForDate(fwdStr);
+                const fwdDisabled = getDisabledSlots(fwdStr, isLarge);
+                const fwdPast = getPastSlots(fwdStr);
+                const fwdAvail = fwdSlots.filter(s => !fwdDisabled.includes(s) && !fwdPast.includes(s));
+                if (fwdAvail.length > 0) suggestions.push(fwdStr);
+            }
         }
         // Backward (not before today)
         const bwd = new Date(base); bwd.setDate(bwd.getDate() - delta);
         if (bwd >= today && suggestions.length < 3) {
             const bwdStr = bwd.toISOString().split('T')[0];
-            const bwdDisabled = getDisabledSlots(bwdStr, isLarge);
-            const bwdPast = getPastSlots(bwdStr);
-            const bwdAvail = ALL_SLOTS.filter(s => !bwdDisabled.includes(s) && !bwdPast.includes(s));
-            if (bwdAvail.length > 0) suggestions.push(bwdStr);
+            if (!window.LumiereHours.isClosedDay(bwdStr)) {
+                const bwdSlots = window.LumiereHours.getSlotsForDate(bwdStr);
+                const bwdDisabled = getDisabledSlots(bwdStr, isLarge);
+                const bwdPast = getPastSlots(bwdStr);
+                const bwdAvail = bwdSlots.filter(s => !bwdDisabled.includes(s) && !bwdPast.includes(s));
+                if (bwdAvail.length > 0) suggestions.push(bwdStr);
+            }
         }
     }
 
@@ -1537,6 +1585,40 @@ function formatTime(timeStr) {
     const period = h >= 12 ? 'PM' : 'AM';
     const h12 = h > 12 ? h - 12 : h === 0 ? 12 : h;
     return `${h12}:${String(m).padStart(2,'0')} ${period}`;
+}
+
+/**
+ * Renders time-slot buttons for a given date. On split-service days
+ * (e.g. Sunday with lunch + dinner), each service window gets its
+ * own labeled section. Single-service days render as one flat group.
+ */
+ function renderTimeSlots(dateStr) {
+    const container = document.getElementById('timeSlotsContainer');
+    container.innerHTML = '';
+
+    const groups = window.LumiereHours.getSlotGroupsForDate(dateStr);
+
+    groups.forEach((group, groupIndex) => {
+        // Only show labels when there's more than one service (lunch + dinner)
+        if (groups.length > 1) {
+            const label = document.createElement('div');
+            label.className = 'slot-service-label';
+            label.textContent = group.label;
+            container.appendChild(label);
+        }
+
+        const slotGroup = document.createElement('div');
+        slotGroup.className = 'slot-group';
+        group.slots.forEach(time => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'time-slot';
+            btn.dataset.time = time;
+            btn.textContent = formatTime(time);
+            slotGroup.appendChild(btn);
+        });
+        container.appendChild(slotGroup);
+    });
 }
 
 function generateBookingId() {

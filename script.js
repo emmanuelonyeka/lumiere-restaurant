@@ -33,13 +33,17 @@ function initPageLoader() {
     const loader = document.querySelector('.page-loader');
     if (!loader) return;
     
-    // Hide loader after content loads
+    // Hide loader after content loads, then trigger hero animations
     window.addEventListener('load', () => {
         setTimeout(() => {
             loader.classList.add('hidden');
             document.body.style.overflow = '';
-            
-            
+
+            // Match the loader's CSS fade-out duration before starting
+            // hero animations, so they begin as the loader disappears.
+            setTimeout(() => {
+                document.body.classList.add('hero-loaded');
+            }, 400);
         }, 1800);
     });
     
@@ -365,7 +369,7 @@ function initHeroAnimations() {
             const span = document.createElement('span');
             span.className = 'char';
             span.textContent = char === ' ' ? '\u00A0' : char;
-            span.style.animationDelay = `${2 + index * 0.05}s`;
+            span.style.animationDelay = `${index * 0.05}s`;
             heroTitle.appendChild(span);
         });
     }
@@ -1058,6 +1062,7 @@ function initHeroAmbience() {
             }
         });
     }
+    
 }
 
 /**
@@ -1308,6 +1313,331 @@ function initSweepLabels() {
 })();
 
 /**
+ * ========================================
+ * CUSTOM DATE PICKER
+ * Replaces a native <input type="date"> with a custom calendar UI
+ * that behaves identically across all devices (especially iOS).
+ *
+ * Usage: initDatePicker(inputElement)
+ *
+ * The native input stays in the DOM (hidden) as the backing store.
+ * When the user picks a date, the input's value is set and a
+ * 'change' event is dispatched — existing listeners keep working.
+ * ========================================
+ */
+function initDatePicker(input) {
+    if (!input) return;
+
+    const MONTHS = ['January','February','March','April','May','June',
+                    'July','August','September','October','November','December'];
+    const WEEKDAYS_SHORT = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+    // ── Helpers ───────────────────────────────────────────
+    const pad = n => String(n).padStart(2, '0');
+    const toISO = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    const fromISO = str => {
+        const [y, m, d] = str.split('-').map(Number);
+        return new Date(y, m - 1, d);
+    };
+    const sameDay = (a, b) =>
+        a.getFullYear() === b.getFullYear() &&
+        a.getMonth() === b.getMonth() &&
+        a.getDate() === b.getDate();
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const maxDate = new Date(today);
+    maxDate.setMonth(maxDate.getMonth() + 3);
+
+    // ── Build DOM ──────────────────────────────────────────
+    const wrapper = document.createElement('div');
+    wrapper.className = 'date-picker-wrapper';
+    input.parentNode.insertBefore(wrapper, input);
+    wrapper.appendChild(input);
+    input.classList.add('native-date');
+
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'date-picker-trigger is-placeholder';
+    trigger.innerHTML = `
+        <span class="date-picker-display">Select a date</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+    `;
+    wrapper.appendChild(trigger);
+
+    const backdrop = document.createElement('div');
+    backdrop.className = 'date-picker-backdrop';
+    document.body.appendChild(backdrop);
+
+    const panel = document.createElement('div');
+    panel.className = 'date-picker-panel';
+    panel.innerHTML = `
+        <div class="date-picker-header">
+            <button type="button" class="date-picker-nav date-picker-prev" aria-label="Previous month">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"/>
+                </svg>
+            </button>
+            <div class="date-picker-monthyear"></div>
+            <button type="button" class="date-picker-nav date-picker-next" aria-label="Next month">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                </svg>
+            </button>
+        </div>
+        <div class="date-picker-weekdays">
+            ${WEEKDAYS_SHORT.map(d => `<div class="date-picker-weekday">${d}</div>`).join('')}
+        </div>
+        <div class="date-picker-grid"></div>
+        <div class="date-picker-footnote"></div>
+    `;
+
+    // Panel always lives in <body> to avoid stacking-context issues with parents.
+    // Position is set on open() based on trigger's bounding rect (desktop) or
+    // pure CSS centering (mobile).
+    document.body.appendChild(panel);
+
+    const monthYearEl = panel.querySelector('.date-picker-monthyear');
+    const prevBtn     = panel.querySelector('.date-picker-prev');
+    const nextBtn     = panel.querySelector('.date-picker-next');
+    const gridEl      = panel.querySelector('.date-picker-grid');
+    const footnoteEl  = panel.querySelector('.date-picker-footnote');
+    const displayEl   = trigger.querySelector('.date-picker-display');
+
+    // Build the closed-days footnote from config
+    if (window.LUMIERE_CONFIG && window.LUMIERE_CONFIG.openingHours) {
+        const closedDays = Object.entries(window.LUMIERE_CONFIG.openingHours)
+            .filter(([, entry]) => entry.closed)
+            .map(([day]) => day.charAt(0).toUpperCase() + day.slice(1));
+        if (closedDays.length > 0) {
+            const closedText = closedDays.length === 1
+                ? `Closed ${closedDays[0]}s`
+                : `Closed ${closedDays.join(', ')}`;
+            footnoteEl.textContent = closedText;
+        }
+    }
+
+    // ── State ──────────────────────────────────────────────
+    let viewYear  = today.getFullYear();
+    let viewMonth = today.getMonth();
+    let selectedDate = null;
+
+    // Initialize from input's current value, if any
+    if (input.value) {
+        selectedDate = fromISO(input.value);
+        viewYear = selectedDate.getFullYear();
+        viewMonth = selectedDate.getMonth();
+        updateTriggerDisplay();
+    }
+
+    // ── Rendering ──────────────────────────────────────────
+    function render() {
+        monthYearEl.textContent = `${MONTHS[viewMonth]} ${viewYear}`;
+
+        // Disable prev if showing today's month, next if showing max month
+        const viewFirst = new Date(viewYear, viewMonth, 1);
+        const todayFirst = new Date(today.getFullYear(), today.getMonth(), 1);
+        const maxFirst = new Date(maxDate.getFullYear(), maxDate.getMonth(), 1);
+        prevBtn.disabled = viewFirst <= todayFirst;
+        nextBtn.disabled = viewFirst >= maxFirst;
+
+        // Calculate grid: 6 rows × 7 cols, starting from Monday
+        // JS getDay() returns 0=Sun..6=Sat, we want 0=Mon..6=Sun
+        const firstOfMonth = new Date(viewYear, viewMonth, 1);
+        const firstWeekday = (firstOfMonth.getDay() + 6) % 7; // shift Sun=0 → Mon=0
+        const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+        const daysInPrevMonth = new Date(viewYear, viewMonth, 0).getDate();
+
+        gridEl.innerHTML = '';
+        const totalCells = 42; // 6 × 7
+
+        for (let i = 0; i < totalCells; i++) {
+            const cell = document.createElement('button');
+            cell.type = 'button';
+            cell.className = 'date-picker-cell';
+
+            let cellDate;
+            let dayNum;
+            let isOtherMonth = false;
+
+            if (i < firstWeekday) {
+                // Previous month tail
+                dayNum = daysInPrevMonth - firstWeekday + 1 + i;
+                cellDate = new Date(viewYear, viewMonth - 1, dayNum);
+                isOtherMonth = true;
+            } else if (i >= firstWeekday + daysInMonth) {
+                // Next month head
+                dayNum = i - firstWeekday - daysInMonth + 1;
+                cellDate = new Date(viewYear, viewMonth + 1, dayNum);
+                isOtherMonth = true;
+            } else {
+                // Current month
+                dayNum = i - firstWeekday + 1;
+                cellDate = new Date(viewYear, viewMonth, dayNum);
+            }
+
+            cell.textContent = dayNum;
+
+            if (isOtherMonth) cell.classList.add('is-other-month');
+            if (sameDay(cellDate, today)) cell.classList.add('is-today');
+            if (selectedDate && sameDay(cellDate, selectedDate)) cell.classList.add('is-selected');
+
+            // Past dates and dates beyond max range → fully disabled
+            if (cellDate < today || cellDate > maxDate) {
+                cell.disabled = true;
+            }
+            // Closed days → NOT disabled, but click-blocked + tooltip
+            else if (window.LumiereHours && window.LumiereHours.isClosedDay(toISO(cellDate))) {
+                cell.classList.add('is-closed-day');
+                const tooltip = document.createElement('span');
+                tooltip.className = 'date-picker-tooltip';
+                tooltip.textContent = 'Closed on Mondays';
+                cell.appendChild(tooltip);
+            }
+
+            cell.addEventListener('click', (e) => {
+                if (cell.disabled) return;
+
+                // Closed day: show tooltip momentarily, don't select.
+                // Stop propagation so the outside-click listener doesn't close the panel.
+                if (cell.classList.contains('is-closed-day')) {
+                    e.stopPropagation();
+                    const tooltip = cell.querySelector('.date-picker-tooltip');
+                    if (tooltip) {
+                        // Hide any other tooltips currently visible
+                        gridEl.querySelectorAll('.date-picker-tooltip.is-visible').forEach(t => {
+                            if (t !== tooltip) t.classList.remove('is-visible');
+                        });
+                        tooltip.classList.add('is-visible');
+                        clearTimeout(cell._tooltipTimer);
+                        cell._tooltipTimer = setTimeout(() => {
+                            tooltip.classList.remove('is-visible');
+                        }, 2500);
+                    }
+                    return;
+                }
+
+                selectedDate = cellDate;
+                viewYear = cellDate.getFullYear();
+                viewMonth = cellDate.getMonth();
+                input.value = toISO(cellDate);
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+                updateTriggerDisplay();
+                render();
+                close();
+            });
+
+            gridEl.appendChild(cell);
+        }
+    }
+
+    function updateTriggerDisplay() {
+        if (!selectedDate) {
+            displayEl.textContent = 'Select a date';
+            trigger.classList.add('is-placeholder');
+            return;
+        }
+        const dayName = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][selectedDate.getDay()];
+        const monthName = MONTHS[selectedDate.getMonth()];
+        displayEl.textContent = `${dayName}, ${selectedDate.getDate()} ${monthName} ${selectedDate.getFullYear()}`;
+        trigger.classList.remove('is-placeholder');
+    }
+
+    // ── Open / close ───────────────────────────────────────
+    function open() {
+        // If input was changed externally (e.g. quick-pick buttons), re-sync
+        if (input.value) {
+            const externalDate = fromISO(input.value);
+            if (!selectedDate || !sameDay(externalDate, selectedDate)) {
+                selectedDate = externalDate;
+                viewYear = externalDate.getFullYear();
+                viewMonth = externalDate.getMonth();
+                updateTriggerDisplay();
+            }
+        }
+        render();
+
+        // Position panel below trigger (desktop only — mobile uses CSS centering)
+        if (window.matchMedia('(min-width: 769px)').matches) {
+            const rect = trigger.getBoundingClientRect();
+            panel.style.top = `${rect.bottom + window.scrollY + 8}px`;
+            panel.style.left = `${rect.left + window.scrollX}px`;
+        } else {
+            // Clear desktop styles in case window was resized
+            panel.style.top = '';
+            panel.style.left = '';
+        }
+
+        panel.classList.add('is-open');
+        backdrop.classList.add('is-open');
+        trigger.classList.add('is-open');
+    }
+
+    function close() {
+        panel.classList.remove('is-open');
+        backdrop.classList.remove('is-open');
+        trigger.classList.remove('is-open');
+    }
+
+    trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (panel.classList.contains('is-open')) close();
+        else open();
+    });
+
+    prevBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        viewMonth--;
+        if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+        render();
+    });
+
+    nextBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        viewMonth++;
+        if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+        render();
+    });
+
+    backdrop.addEventListener('click', close);
+
+    // Click outside (desktop)
+    document.addEventListener('click', (e) => {
+        if (!panel.classList.contains('is-open')) return;
+        if (panel.contains(e.target) || trigger.contains(e.target)) return;
+        close();
+    });
+
+    // Escape key to close
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && panel.classList.contains('is-open')) close();
+    });
+
+    // Close on scroll (desktop only — mobile uses fixed centering, no problem)
+    window.addEventListener('scroll', () => {
+        if (panel.classList.contains('is-open') && window.matchMedia('(min-width: 769px)').matches) {
+            close();
+        }
+    }, { passive: true });
+
+    // Listen for external value changes (e.g. quick-pick buttons setting input.value)
+    input.addEventListener('change', () => {
+        if (!input.value) return;
+        const externalDate = fromISO(input.value);
+        if (!selectedDate || !sameDay(externalDate, selectedDate)) {
+            selectedDate = externalDate;
+            updateTriggerDisplay();
+        }
+    });
+}
+
+/**
  * ======================================== ;
  * CONSOLE WELCOME
  * (Optional brand signature shown when developers open the browser
@@ -1316,3 +1646,152 @@ function initSweepLabels() {
  */
 console.log('%c🍽️ Lumière Fine Dining', 'font-size: 24px; font-weight: bold; color: #C6A769;');
 console.log('%cA culinary experience crafted with passion.', 'font-size: 14px; color: #C9C3B8;');
+
+
+
+/**
+ * ========================================
+ * OPENING HOURS HELPERS
+ * Shared utilities that read from config.openingHours and produce
+ * date-specific slot lists. Used by the date picker and by the
+ * reservation/modify booking pages.
+ * ========================================
+ */
+(function() {
+    if (!window.LUMIERE_CONFIG) return;
+
+    const DAY_KEYS = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+
+    // Parse 'HH:MM' to minutes since midnight
+    function toMinutes(hhmm) {
+        const [h, m] = hhmm.split(':').map(Number);
+        return h * 60 + m;
+    }
+
+    // Convert minutes since midnight back to 'HH:MM'
+    function toHHMM(minutes) {
+        const h = Math.floor(minutes / 60);
+        const m = minutes % 60;
+        return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+    }
+
+    /**
+     * Returns the schedule entry for a given ISO date string (YYYY-MM-DD).
+     * Output: { closed: true, dayName } OR { closed: false, dayName, services }
+     */
+    function getScheduleForDate(dateStr) {
+        const d = new Date(dateStr + 'T00:00:00');
+        const dayKey = DAY_KEYS[d.getDay()];
+        const dayName = dayKey.charAt(0).toUpperCase() + dayKey.slice(1);
+        const entry = window.LUMIERE_CONFIG.openingHours[dayKey];
+
+        if (!entry || entry.closed) {
+            return { closed: true, dayName };
+        }
+        return { closed: false, dayName, services: entry.services };
+    }
+
+    /**
+     * Whether the restaurant is closed on a given date.
+     */
+    function isClosedDay(dateStr) {
+        return getScheduleForDate(dateStr).closed;
+    }
+
+    /**
+     * Returns the list of bookable 30-min time slots for a given date,
+     * factoring in the per-service last-seat buffer.
+     *
+     * Output: [] (closed) or ['12:00', '12:30', ..., '20:00']
+     */
+    function getSlotsForDate(dateStr) {
+        const schedule = getScheduleForDate(dateStr);
+        if (schedule.closed) return [];
+
+        const buffer = window.LUMIERE_CONFIG.lastSeatBuffer;
+        const slots = [];
+
+        for (const service of schedule.services) {
+            const startMin = toMinutes(service.start);
+            const endMin   = toMinutes(service.end);
+            const durationMin = endMin - startMin;
+
+            // Use long buffer for services 4+ hours, short for shorter
+            const bufferMin = durationMin >= 240 ? buffer.long : buffer.short;
+            const lastSlotMin = endMin - bufferMin;
+
+            for (let m = startMin; m <= lastSlotMin; m += 30) {
+                slots.push(toHHMM(m));
+            }
+        }
+
+        return slots;
+    }
+
+    /**
+     * Like getSlotsForDate, but returns slots grouped by service window.
+     * Each group has a label (e.g. 'Lunch', 'Dinner') derived from start time.
+     * Used by the UI to render visually-separated service blocks on
+     * split-service days like Sunday.
+     *
+     * Output: [
+     *   { label: 'Lunch',  slots: ['12:00', '12:30', ...] },
+     *   { label: 'Dinner', slots: ['18:00', '18:30', ...] }
+     * ]
+     */
+    function getSlotGroupsForDate(dateStr) {
+        const schedule = getScheduleForDate(dateStr);
+        if (schedule.closed) return [];
+
+        const buffer = window.LUMIERE_CONFIG.lastSeatBuffer;
+        const groups = [];
+
+        for (const service of schedule.services) {
+            const startMin = toMinutes(service.start);
+            const endMin   = toMinutes(service.end);
+            const durationMin = endMin - startMin;
+            const bufferMin = durationMin >= 240 ? buffer.long : buffer.short;
+            const lastSlotMin = endMin - bufferMin;
+
+            const slots = [];
+            for (let m = startMin; m <= lastSlotMin; m += 30) {
+                slots.push(toHHMM(m));
+            }
+
+            // Label by start hour: <17:00 → Lunch, ≥17:00 → Dinner
+            // (For most fine dining this binary works; can be extended later)
+            const label = startMin < 17 * 60 ? 'Lunch' : 'Dinner';
+
+            groups.push({ label, slots });
+        }
+
+        return groups;
+    }
+
+    /**
+     * Find the closest open day after a given date (exclusive).
+     * Stops searching after 14 days to avoid infinite loops on a
+     * misconfigured schedule.
+     *
+     * Returns ISO date string or null.
+     */
+    function findNextOpenDate(dateStr) {
+        const d = new Date(dateStr + 'T00:00:00');
+        for (let i = 1; i <= 14; i++) {
+            const next = new Date(d);
+            next.setDate(d.getDate() + i);
+            const iso = next.toISOString().slice(0, 10);
+            if (!isClosedDay(iso)) return iso;
+        }
+        return null;
+    }
+
+    // Expose as a clean namespace
+    window.LumiereHours = {
+        getScheduleForDate,
+        isClosedDay,
+        getSlotsForDate,
+        getSlotGroupsForDate,
+        findNextOpenDate
+    };
+})();

@@ -143,14 +143,9 @@ You may not resell, redistribute, or sublicense the template files. See `LICENSE
 
 ## Image & Audio Credits
 
-The demo photos and hero videos shipped with the template are licensed for 
-**demo purposes only** and must be replaced with your own assets before 
-going live.
+The demo photos and hero videos shipped with the template are licensed for **demo purposes only** and must be replaced with your own assets before going live.
 
-The template includes a hero ambient audio feature, but **no audio files 
-are bundled** — see `audio/README.txt` for instructions on adding your 
-own royalty-free tracks. The feature is hidden automatically until you 
-add the files.
+The `audio/` folder contains three 1-second silent placeholder MP3s so the ambient sound feature loads cleanly. Replace them with your own royalty-free tracks to hear actual audio — see `audio/README.txt` for guidance.
 
 ---
 

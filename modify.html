@@ -275,6 +275,9 @@
             transition: all 0.3s ease;
             background: var(--color-bg-tertiary);
             flex-shrink: 0;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         .party-btn:hover { border-color: var(--color-gold); color: var(--color-gold); }
@@ -993,6 +996,8 @@ const WHATSAPP_NUMBER = window.LUMIERE_CONFIG.whatsappNumber;
 
 const ALL_SLOTS           = ['17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30','21:00','21:30'];
 const LARGE_GROUP_BLOCKED = ['17:00','17:30','18:00','18:30','19:00'];
+// Initialize custom date picker on the modify date input
+initDatePicker(document.getElementById('modifyDate'));
 
 const OCCASION_LABELS = {
     anniversary: 'Anniversary',
