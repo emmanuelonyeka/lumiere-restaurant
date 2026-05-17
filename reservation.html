@@ -511,10 +511,11 @@
         .success-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:var(--space-4); margin-bottom:var(--space-10); }
         .success-btn {
             display:inline-flex; align-items:center; gap:var(--space-3);
-            padding:var(--space-4) var(--space-7); font-family:var(--font-sans);
+            padding:var(--space-5) var(--space-6); font-family:var(--font-sans);
             font-size:var(--text-xs); font-weight:500; letter-spacing:.15em;
             text-transform:uppercase; border-radius:var(--radius-sm);
             cursor:pointer; transition:all .3s ease; text-decoration:none;
+            min-height:48px; box-sizing:border-box;
         }
         .success-btn svg { width:14px; height:14px; flex-shrink:0; }
         .success-btn-cancel { background:transparent; color:rgba(220,80,80,.9); border:1px solid rgba(220,80,80,.4); }
@@ -523,7 +524,10 @@
         .success-btn-modify:hover { background:var(--color-gold-muted); border-color:var(--color-gold); }
         .success-btn-message { background:var(--color-gold); color:var(--color-bg-primary); border:1px solid var(--color-gold); }
         .success-btn-message:hover { background:transparent; color:var(--color-gold); }
-        @media(max-width:480px){ .success-actions{flex-direction:column;align-items:center;} .success-btn{width:100%;max-width:320px;justify-content:center;} }
+        @media(max-width:480px){
+            .success-actions{flex-direction:column;align-items:center;gap:var(--space-3);}
+            .success-btn{width:100%;max-width:320px;justify-content:center;}
+        }
 
         /* ── Decorative / ornament ── */
         .section-ornament { display:flex; align-items:center; gap:var(--space-4); margin-bottom:var(--space-8); }
@@ -700,7 +704,7 @@
             <div class="success-icon" id="successIcon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6L9 17l-5-5"/></svg>
             </div>
-            <h2 class="success-title" id="successTitle">Reservation Confirmed 🎉</h2>
+            <h2 class="success-title" id="successTitle">Reservation Confirmed</h2>
             <p class="success-subtitle" id="successSubtitle">We look forward to welcoming you</p>
             <p class="success-text" id="successText">Your reservation has been confirmed. A confirmation email has been sent to your inbox with all the details.</p>
             <div class="success-details" id="successDetails"></div>
@@ -874,15 +878,15 @@
             <div class="form-grid">
                 <div class="form-group">
                     <label class="form-label" for="firstName">First Name <span>*</span></label>
-                    <input type="text" class="form-input" id="firstName" placeholder="Antoine" autocomplete="given-name">
+                    <input type="text" class="form-input" id="firstName" placeholder="Antoine" autocomplete="given-name" maxlength="50">
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="lastName">Last Name <span>*</span></label>
-                    <input type="text" class="form-input" id="lastName" placeholder="Moreau" autocomplete="family-name">
+                    <input type="text" class="form-input" id="lastName" placeholder="Moreau" autocomplete="family-name" maxlength="50">
                 </div>
                 <div class="form-group full-width">
                     <label class="form-label" for="email">Email Address <span>*</span></label>
-                    <input type="email" class="form-input" id="email" placeholder="your@email.com" autocomplete="email">
+                    <input type="email" class="form-input" id="email" placeholder="your@email.com" autocomplete="email" maxlength="254">
                 </div>
                 <div class="form-group full-width">
                     <label class="form-label">Phone Number <span>*</span></label>
@@ -901,7 +905,7 @@
                                 <div class="country-list" id="countryList"></div>
                             </div>
                         </div>
-                        <input type="tel" class="form-input phone-number-input" id="phone" placeholder="1 23 45 67 89">
+                        <input type="tel" class="form-input phone-number-input" id="phone" placeholder="1 23 45 67 89" maxlength="20">
                     </div>
                 </div>
                 <div class="form-group full-width">
@@ -924,7 +928,7 @@
                 </div>
                 <div class="form-group full-width">
                     <label class="form-label">Dietary Requirements & Special Requests</label>
-                    <textarea class="form-textarea" id="specialRequests" placeholder="Please inform us of any dietary restrictions, allergies, or special arrangements you may require..."></textarea>
+                    <textarea class="form-textarea" id="specialRequests" placeholder="Please inform us of any dietary restrictions, allergies, or special arrangements you may require..." maxlength="500"></textarea>
                 </div>
             </div>
 
@@ -1219,14 +1223,20 @@ function adjustParty(change) {
         min = 1; max = 20;
     }
 
-    let newVal = bookingData.party + change;
+    const prevVal = bookingData.party;
+    let newVal = prevVal + change;
 
     // Private dining: first press in either direction jumps to 10
-    if (isPrivate && bookingData.party < 10 && newVal < 10) {
+    if (isPrivate && prevVal < 10 && newVal < 10) {
         newVal = 10;
     }
 
     newVal = Math.min(max, Math.max(min, newVal));
+
+    // Bail out early if the clamp meant nothing actually changed
+    // (e.g. user pressed − at 1, or + at the max).
+    if (newVal === prevVal) return;
+
     bookingData.party = newVal;
     document.getElementById('partyCount').textContent = newVal;
 
@@ -1737,9 +1747,30 @@ function validateStep(step) {
         const ln = document.getElementById('lastName').value.trim();
         const em = document.getElementById('email').value.trim();
         const ph = document.getElementById('phone').value.trim();
+
+        // Names: required + must contain at least one letter (Unicode-aware,
+        // so "José", "O'Brien", "Jean-Pierre" pass, but "123" or "---" don't)
+        const hasLetter = /\p{L}/u;
         if (!fn || !ln) { showToast('Please enter your full name.'); return false; }
-        if (!em || !em.includes('@') || !em.includes('.')) { showToast('Please enter a valid email address.'); return false; }
+        if (!hasLetter.test(fn) || !hasLetter.test(ln)) {
+            showToast('Please enter a valid name.');
+            return false;
+        }
+
+        // Email: required + basic structural sanity (something@something.tld)
+        if (!em || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) {
+            showToast('Please enter a valid email address.');
+            return false;
+        }
+
+        // Phone: required + 7–15 digits (counting digits only, ignoring
+        // spaces, parens, dashes, plus signs — international E.164 standard)
         if (!ph) { showToast('Please enter your phone number.'); return false; }
+        const digitCount = ph.replace(/\D/g, '').length;
+        if (digitCount < 7 || digitCount > 15) {
+            showToast('Please enter a valid phone number.');
+            return false;
+        }
     }
     return true;
 }
@@ -1891,7 +1922,7 @@ function showSuccessState(fd, ft) {
         // Change icon to clock
         document.getElementById('successIcon').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
     } else {
-        document.getElementById('successTitle').textContent = 'Reservation Confirmed 🎉';
+        document.getElementById('successTitle').textContent = 'Reservation Confirmed';
         document.getElementById('successSubtitle').textContent = 'We look forward to welcoming you';
         document.getElementById('successText').textContent = 'Your reservation has been confirmed. A confirmation email has been sent to your inbox. We look forward to curating an extraordinary evening for you.';
     }
@@ -1932,9 +1963,40 @@ function showSuccessState(fd, ft) {
 }
 
 // ── Cancel / Modify navigation ───────────────────────────────
+
+/**
+ * Before navigating to cancel/modify, bake the current booking into
+ * reservation.html's URL so that pressing the browser Back button
+ * returns the user to a URL that re-renders the success view.
+ */
+ function bakeSuccessUrl() {
+    const id = bookingData.bookingId;
+    if (!id) return;
+    const fd = formatDate(bookingData.date);
+    const ft = formatTime(bookingData.time);
+    const params = new URLSearchParams({
+        success: '1',
+        id:         id,
+        email:      bookingData.email || '',
+        firstName:  bookingData.firstName || '',
+        lastName:   bookingData.lastName || '',
+        experience: bookingData.experience || '',
+        expLabel:   bookingData.experienceLabel || '',
+        date:       bookingData.date || '',
+        time:       bookingData.time || '',
+        party:      bookingData.party || '',
+        occasion:   bookingData.occasion || '',
+        phone:      bookingData.phone || '',
+        requests:   bookingData.specialRequests || '',
+        large:      isLargeGroup ? '1' : '0'
+    });
+    history.replaceState({}, '', `reservation.html?${params}`);
+}
+
 function goToCancel() {
     const id = bookingData.bookingId;
     if (!id) return;
+    bakeSuccessUrl();
     const fd = formatDate(bookingData.date);
     const ft = formatTime(bookingData.time);
     const params = `id=${id}&email=${encodeURIComponent(bookingData.email)}&name=${encodeURIComponent(bookingData.firstName+' '+bookingData.lastName)}&experience=${encodeURIComponent(bookingData.experienceLabel)}&date=${encodeURIComponent(fd)}&time=${encodeURIComponent(ft)}&party=${encodeURIComponent(bookingData.party+(bookingData.party===1?' Guest':' Guests'))}`;
@@ -1944,6 +2006,7 @@ function goToCancel() {
 function goToModify() {
     const id = bookingData.bookingId;
     if (!id) return;
+    bakeSuccessUrl();
     const fd = formatDate(bookingData.date);
     const ft = formatTime(bookingData.time);
     const params = [
@@ -2115,6 +2178,53 @@ document.addEventListener('click', e => {
 });
 
 renderCountryList(countries);
+
+// ── Success view restore from URL params ─────────────────────
+// When user presses Back from modify/cancel, reservation.html
+// reloads with ?success=1 in the URL. Detect this and rebuild
+// the success view from the URL params instead of showing the
+// multi-step booking form.
+(function restoreSuccessIfNeeded() {
+    const p = new URLSearchParams(window.location.search);
+    if (p.get('success') !== '1') return;
+
+    // Restore bookingData from URL
+    bookingData.bookingId        = p.get('id')         || '';
+    bookingData.email            = p.get('email')      || '';
+    bookingData.firstName        = p.get('firstName')  || '';
+    bookingData.lastName         = p.get('lastName')   || '';
+    bookingData.experience       = p.get('experience') || '';
+    bookingData.experienceLabel  = p.get('expLabel')   || '';
+    bookingData.date             = p.get('date')       || '';
+    bookingData.time             = p.get('time')       || '';
+    bookingData.party            = parseInt(p.get('party')) || 2;
+    bookingData.occasion         = p.get('occasion')   || '';
+    bookingData.phone            = p.get('phone')      || '';
+    bookingData.specialRequests  = p.get('requests')   || '';
+    isLargeGroup                 = p.get('large') === '1';
+
+    if (!bookingData.bookingId) return; // nothing to restore
+
+    // Hide the multi-step booking form
+    const booking = document.getElementById('bookingSection');
+    if (booking) booking.style.display = 'none';
+
+    // Build formatted date and time for display
+    const fd = bookingData.date
+        ? (() => {
+            const [y, m, d] = bookingData.date.split('-').map(Number);
+            const dt = new Date(y, m - 1, d);
+            const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+            const months = ['January','February','March','April','May','June',
+                            'July','August','September','October','November','December'];
+            return `${days[dt.getDay()]}, ${d} ${months[m - 1]} ${y}`;
+        })()
+        : '';
+    const ft = bookingData.time ? formatTime(bookingData.time) : '';
+
+    // Show success state (reuses the existing showSuccessState function)
+    showSuccessState(fd, ft);
+})();
 </script>
 </body>
 </html>

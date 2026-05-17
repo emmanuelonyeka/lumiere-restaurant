@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initParallaxEffect();
     initTextReveal();
     initHeroAnimations();
-    initGalleryTap();
     initHeroAmbience();
     initStickyReserve();
     initStatCounters();
@@ -102,6 +101,14 @@ function initNavigation() {
     window.addEventListener('scroll', () => {
         if (!ticking) {
             requestAnimationFrame(() => {
+                // Skip updates while the mobile menu is open — the body's
+                // fixed-position scroll-lock fakes a scrollY of 0, which
+                // would otherwise wrongly remove the .scrolled class.
+                if (navMenu && navMenu.classList.contains('active')) {
+                    ticking = false;
+                    return;
+                }
+
                 const currentScroll = window.pageYOffset;
                 
                 if (currentScroll > 50) {
@@ -845,32 +852,6 @@ function initLazyLoading() {
 
 document.addEventListener('DOMContentLoaded', initLazyLoading);
 
-// Gallery tap effect for mobile
-function initGalleryTap() {
-    if (!window.matchMedia('(pointer: coarse)').matches) return;
-
-    const galleryItems = document.querySelectorAll('.gallery-item');
-
-    galleryItems.forEach(item => {
-        item.addEventListener('touchstart', () => {
-            // Close any other open items first
-            galleryItems.forEach(other => {
-                if (other !== item) {
-                    other.classList.remove('tapped');
-                }
-            });
-            // Show this item
-            item.classList.add('tapped');
-        }, { passive: true });
-
-        item.addEventListener('touchend', () => {
-            // Small delay before hiding so user sees it
-            setTimeout(() => {
-                item.classList.remove('tapped');
-            }, 800);
-        }, { passive: true });
-    });
-}
 
 /**
  * ========================================

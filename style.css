@@ -306,8 +306,7 @@ button {
     background: transparent;
 }
 
-.navbar.scrolled,
-.navbar:has(.nav-menu.active) {
+.navbar.scrolled {
     background: var(--color-bg-glass);
     backdrop-filter: blur(24px) saturate(180%);
     -webkit-backdrop-filter: blur(24px) saturate(180%);
@@ -813,7 +812,10 @@ button {
     align-items: center;
     gap: var(--space-4);
     opacity: 0;
-    animation: fadeIn 1s ease forwards 5.5s;
+}
+
+.hero-loaded .scroll-indicator {
+    animation: fadeIn 1s ease forwards 3s;
 }
 
 @keyframes fadeInUp {
@@ -925,7 +927,7 @@ button {
     background: var(--color-bg-primary);
     transform: scaleX(0);
     transform-origin: right;
-    transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+    transition: transform 0.7s cubic-bezier(0.77, 0, 0.175, 1);
     z-index: 0;
 }
 
@@ -938,11 +940,11 @@ button {
 .magnetic-btn svg {
     position: relative;
     z-index: 1;
-    transition: color 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+    transition: color 0.25s cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 .magnetic-btn:hover {
-    color: var(--color-gold);
+    color: var(--color-bg);
 }
 
 .magnetic-btn:hover span {
@@ -1231,6 +1233,7 @@ button {
 
     .about-content {
         order: 3;
+        margin-top: var(--space-6);
     }
 }
 
@@ -3310,7 +3313,9 @@ a.experience-card {
     background: var(--color-text-primary);
 }
 
-.reservation-cta .magnetic-btn.secondary:hover {
+.reservation-cta .magnetic-btn.secondary:hover,
+.reservation-cta .magnetic-btn.secondary:hover span,
+.reservation-cta .magnetic-btn.secondary:hover svg {
     color: var(--color-bg-primary);
 }
 
@@ -3346,7 +3351,7 @@ a.experience-card {
    GALLERY — ENHANCED
    ======================================== */
 
-   .gallery {
+.gallery {
     padding: var(--space-32) 0;
     background: var(--color-bg-primary);
     position: relative;
@@ -3455,7 +3460,7 @@ a.experience-card {
 }
 
 /* Cursor devices — show on hover only */
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
     .gallery-item:hover .gallery-overlay {
         opacity: 1;
     }
@@ -3465,8 +3470,9 @@ a.experience-card {
     }
 }
 
-/* Touch devices — always visible */
-@media (hover: none) {
+/* Touch devices — always visible. Match if EITHER no hover OR coarse pointer,
+   since Android Chrome can incorrectly report hover: hover on phones. */
+@media (hover: none), (pointer: coarse) {
     .gallery-overlay {
         opacity: 1;
         background: linear-gradient(
@@ -3687,7 +3693,9 @@ a.experience-card {
     background: var(--color-text-primary) !important;
 }
 
-.private-event-btn:hover {
+.private-event-btn:hover,
+.private-event-btn:hover span,
+.private-event-btn:hover svg {
     color: var(--color-bg-primary) !important;
 }
 
@@ -5266,6 +5274,9 @@ a.experience-card {
     align-items: center;
     justify-content: center;
     transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .date-picker-nav:hover:not(:disabled) {
@@ -5323,6 +5334,9 @@ a.experience-card {
     justify-content: center;
     transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
     border: 1px solid transparent;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .date-picker-cell:hover:not(:disabled):not(.is-selected) {
