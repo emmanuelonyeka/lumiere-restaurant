@@ -499,10 +499,16 @@ function initMenuAccordion() {
 
     let showAllMode = false;
 
-    // Apply collapsed/open state based on which heading should be open
-    function applyState(openKey) {
+    // Set of currently-open section keys. Multiple sections can be open
+    // simultaneously — tapping a heading toggles its own state without
+    // affecting others. No auto-scroll: the user stays exactly where they
+    // are, the tapped section expands/collapses in place.
+    const openKeys = new Set();
+
+    // Apply collapsed/open state based on which keys are open
+    function applyState() {
         sections.forEach(sec => {
-            const open = showAllMode || sec.key === openKey;
+            const open = showAllMode || openKeys.has(sec.key);
             sec.heading.classList.toggle('is-open', open);
             sec.items.forEach(item => {
                 item.classList.toggle('is-collapsed', !open);
@@ -511,28 +517,46 @@ function initMenuAccordion() {
     }
 
     // Default: first section open
-    let currentOpen = sections[0].key;
-    applyState(currentOpen);
+    openKeys.add(sections[0].key);
+    applyState();
 
-    // Heading click → toggle accordion (mobile only via CSS, but JS guards too)
+    // Heading click → toggle that section's open state independently
+    // No closing of others, no scrolling — pure local toggle.
     headings.forEach(heading => {
         heading.addEventListener('click', () => {
             if (window.matchMedia('(min-width: 769px)').matches) return;
-            if (showAllMode) return; // ignore taps when in show-all
 
             const key = heading.dataset.heading;
-            const wasOpen = currentOpen;
-            const tappingSameOne = (currentOpen === key);
 
-            currentOpen = tappingSameOne ? null : key;
-            applyState(currentOpen);
-
-            if (wasOpen && !tappingSameOne) {
-                // Wait for layout to settle (collapsing items shifts the page)
-                requestAnimationFrame(() => {
-                    heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                });
+            // If currently in show-all mode, tapping any heading exits show-all
+            // and captures the current "all open" state minus the tapped one.
+            if (showAllMode) {
+                showAllMode = false;
+                if (showAllBtn) {
+                    showAllBtn.classList.remove('is-active');
+                    // Fade-swap the text to match
+                    showAllBtn.classList.add('is-fading');
+                    setTimeout(() => {
+                        showAllBtn.textContent = 'Show All Sections';
+                        showAllBtn.classList.remove('is-fading');
+                    }, 150);
+                }
+                // Pre-fill openKeys with every section (since they were all visually open)
+                openKeys.clear();
+                sections.forEach(sec => openKeys.add(sec.key));
+                // Then remove the tapped one (since the tap means "close this")
+                openKeys.delete(key);
+                applyState();
+                return;
             }
+
+            // Normal toggle when not in show-all mode
+            if (openKeys.has(key)) {
+                openKeys.delete(key);
+            } else {
+                openKeys.add(key);
+            }
+            applyState();
         });
     });
 
@@ -541,32 +565,40 @@ function initMenuAccordion() {
         showAllBtn.addEventListener('click', () => {
             showAllMode = !showAllMode;
             showAllBtn.classList.toggle('is-active', showAllMode);
-            showAllBtn.textContent = showAllMode ? 'Collapse Sections' : 'Show All Sections';
-            if (!showAllMode && !currentOpen) currentOpen = sections[0].key;
-            applyState(currentOpen);
+
+            // Fade text out, swap, fade back in
+            showAllBtn.classList.add('is-fading');
+            setTimeout(() => {
+                showAllBtn.textContent = showAllMode ? 'Collapse Sections' : 'Show All Sections';
+                showAllBtn.classList.remove('is-fading');
+            }, 200);
+
+            openKeys.clear();
+            if (!showAllMode) {
+                openKeys.add(sections[0].key);
+            }
+            applyState();
         });
     }
 
-    // Hook for the existing category filter to control accordion
+    // Hook for the existing category filter to control accordion.
+    // Filter UX is "focus on this category" — close everything else, open
+    // just the filtered one. (When filter says 'all', reset to default of
+    // first-section-open.)
     window.__menuAccordionSetCategory = function(category) {
         if (window.matchMedia('(min-width: 769px)').matches) return;
-        if (category === 'all') {
-            showAllMode = false;
-            if (showAllBtn) {
-                showAllBtn.classList.remove('is-active');
-                showAllBtn.textContent = 'Show All Sections';
-            }
-            currentOpen = sections[0].key;
-            applyState(currentOpen);
-        } else {
-            showAllMode = false;
-            if (showAllBtn) {
-                showAllBtn.classList.remove('is-active');
-                showAllBtn.textContent = 'Show All Sections';
-            }
-            currentOpen = category;
-            applyState(currentOpen);
+        showAllMode = false;
+        if (showAllBtn) {
+            showAllBtn.classList.remove('is-active');
+            showAllBtn.textContent = 'Show All Sections';
         }
+        openKeys.clear();
+        if (category === 'all') {
+            openKeys.add(sections[0].key);
+        } else {
+            openKeys.add(category);
+        }
+        applyState();
     };
 }
 
@@ -1100,8 +1132,9 @@ function initStickyReserve() {
                     btn.classList.remove('visible');
                     btn.classList.add('hidden');
                 } else {
-                    // Footer gone — restore if hero is also gone
-                    if (!hero.getBoundingClientRect().bottom > 0) {
+                    // Footer gone — restore button if hero is also out of view
+                    // (i.e. hero's bottom edge is at or above viewport top)
+                    if (hero.getBoundingClientRect().bottom <= 0) {
                         btn.classList.remove('hidden');
                         btn.classList.add('visible');
                     }
@@ -1619,18 +1652,6 @@ function initDatePicker(input) {
 }
 
 /**
- * ======================================== ;
- * CONSOLE WELCOME
- * (Optional brand signature shown when developers open the browser
- * console. Customize the text below or delete this entire block.)
- * ========================================
- */
-console.log('%c🍽️ Lumière Fine Dining', 'font-size: 24px; font-weight: bold; color: #C6A769;');
-console.log('%cA culinary experience crafted with passion.', 'font-size: 14px; color: #C9C3B8;');
-
-
-
-/**
  * ========================================
  * OPENING HOURS HELPERS
  * Shared utilities that read from config.openingHours and produce
@@ -1776,3 +1797,75 @@ console.log('%cA culinary experience crafted with passion.', 'font-size: 14px; c
         findNextOpenDate
     };
 })();
+
+/**
+ * ========================================
+ * AUTO-SEASON
+ * Updates the "Current Season — Spring 2026" line on the menu section
+ * based on today's date, using meteorological seasons (calendar-aligned).
+ * Spring: Mar–May, Summer: Jun–Aug, Autumn: Sep–Nov, Winter: Dec–Feb.
+ * Winter uses the year of its Jan/Feb portion (e.g. Dec 2026 → Winter 2027).
+ * ========================================
+ */
+(function() {
+    const seasonNameEl = document.getElementById('seasonName');
+    const seasonUpdatedEl = document.getElementById('seasonUpdated');
+    if (!seasonNameEl && !seasonUpdatedEl) return;
+
+    const SEASONS = [
+        { name: 'Winter', startMonth: 12, firstMonth: 'December' }, // Dec → Winter (year + 1)
+        { name: 'Spring', startMonth: 3,  firstMonth: 'March' },
+        { name: 'Summer', startMonth: 6,  firstMonth: 'June' },
+        { name: 'Autumn', startMonth: 9,  firstMonth: 'September' },
+        { name: 'Winter', startMonth: 1,  firstMonth: 'December' }, // Jan-Feb → still Winter, same year
+    ];
+
+    const now = new Date();
+    const month = now.getMonth() + 1; // 1-12
+    const year = now.getFullYear();
+
+    let season, displayYear, firstMonth;
+
+    if (month === 12) {
+        season = 'Winter';
+        displayYear = year + 1;
+        firstMonth = 'December';
+    } else if (month <= 2) {
+        season = 'Winter';
+        displayYear = year;
+        firstMonth = 'December';
+    } else if (month <= 5) {
+        season = 'Spring';
+        displayYear = year;
+        firstMonth = 'March';
+    } else if (month <= 8) {
+        season = 'Summer';
+        displayYear = year;
+        firstMonth = 'June';
+    } else { // 9, 10, 11
+        season = 'Autumn';
+        displayYear = year;
+        firstMonth = 'September';
+    }
+
+    // For "Menu updated", the year is the year the season started — usually
+    // the same as displayYear, except for winter started in December.
+    const updatedYear = (season === 'Winter' && month === 12) ? year : (season === 'Winter' ? year - 1 : year);
+
+    if (seasonNameEl) {
+        seasonNameEl.textContent = `${season} ${displayYear}`;
+    }
+    if (seasonUpdatedEl) {
+        seasonUpdatedEl.textContent = `Menu updated ${firstMonth} ${updatedYear}`;
+    }
+})();
+
+/**
+ * ======================================== ;
+ * CONSOLE WELCOME
+ * (Optional brand signature shown when developers open the browser
+ * console. Customize the text below or delete this entire block.)
+ * ========================================
+ */
+console.log('%c🍽️ Lumière Fine Dining', 'font-size: 24px; font-weight: bold; color: #C6A769;');
+console.log('%cA culinary experience crafted with passion.', 'font-size: 14px; color: #C9C3B8;');

@@ -138,13 +138,15 @@ body {
     color: var(--color-bg-primary);
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
+/* Custom Scrollbar — always visible, thin gold thumb on transparent track.
+   macOS may still auto-hide on trackpad scroll based on user OS setting,
+   but mouse-wheel users and Windows users see it constantly. */
+   ::-webkit-scrollbar {
+    width: 4px;
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--color-bg-secondary);
+    background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -154,6 +156,12 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--color-gold);
+}
+
+/* Firefox — uses scrollbar-color property */
+html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-gold-dark) transparent;
 }
 
 img {
@@ -2038,13 +2046,20 @@ button {
         letter-spacing: 0.2em;
         text-transform: uppercase;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: background 0.3s ease, border-color 0.3s ease, color 0.2s ease;
     }
 
     .menu-show-all:hover,
     .menu-show-all.is-active {
         background: var(--color-gold-muted);
         border-color: var(--color-gold);
+    }
+
+    /* Fade the text out briefly during a state change so the wording swap
+       isn't a jarring snap. JS toggles .is-fading just long enough to
+       cover the text replacement. */
+    .menu-show-all.is-fading {
+        color: transparent;
     }
 }
 

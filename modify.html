@@ -459,14 +459,15 @@
         .custom-select.open .custom-select-trigger { border-color: var(--color-gold); box-shadow: 0 0 0 3px var(--color-gold-muted); color: var(--color-text-primary); }
         .custom-select-trigger svg { width: 16px; height: 16px; color: var(--color-gold); transition: transform 0.3s ease; flex-shrink: 0; }
         .custom-select.open .custom-select-trigger svg { transform: rotate(180deg); }
-        .custom-select-options { position: absolute; top: calc(100% + var(--space-2)); left: 0; right: 0; background: var(--color-bg-elevated); border: 1px solid var(--color-border); border-radius: var(--radius-sm); z-index: 100; overflow: hidden; opacity: 0; transform: translateY(-10px); pointer-events: none; transition: all 0.3s cubic-bezier(0.16,1,0.3,1); box-shadow: var(--shadow-lg); }
-        .custom-select.open .custom-select-options { opacity: 1; transform: translateY(0); pointer-events: all; }
+        .custom-select-options { position: absolute; top: calc(100% + var(--space-2)); left: 0; right: 0; z-index: 100; opacity: 0; pointer-events: none; display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.9s cubic-bezier(0.16,1,0.3,1), opacity 0.25s ease; }
+        .custom-select-options > .custom-select-options-inner { overflow: hidden; background: var(--color-bg-elevated); border-radius: var(--radius-sm); box-shadow: var(--shadow-lg); border: 1px solid transparent; transition: border-color 0.25s ease; }
+        .custom-select.open .custom-select-options { opacity: 1; pointer-events: all; grid-template-rows: 1fr; }
+        .custom-select.open .custom-select-options > .custom-select-options-inner { border-color: var(--color-border); }
         .custom-option { padding: var(--space-4) var(--space-5); font-family: var(--font-sans); font-size: var(--text-sm); font-weight: 300; color: var(--color-text-secondary); cursor: pointer; transition: all 0.2s ease; border-bottom: 1px solid var(--color-border); }
         .custom-option:last-child { border-bottom: none; }
         .custom-option:hover { background: var(--color-gold-muted); color: var(--color-gold); padding-left: var(--space-3); }
         .custom-option.selected { color: var(--color-gold); background: var(--color-gold-muted); }
-        .custom-select.drop-up .custom-select-options { top: auto; bottom: calc(100% + var(--space-2)); transform: translateY(10px); }
-        .custom-select.drop-up.open .custom-select-options { transform: translateY(0); }
+        .custom-select.drop-up .custom-select-options { top: auto; bottom: calc(100% + var(--space-2)); }
 
         /* ── Phone input ── */
         .phone-input-wrapper { display: flex; gap: 0; align-items: stretch; }
@@ -922,13 +923,14 @@
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
                             </div>
                             <div class="custom-select-options">
-                                <div class="custom-option" data-value="">Select an occasion (optional)</div>
-                                <div class="custom-option" data-value="anniversary">Anniversary</div>
-                                <div class="custom-option" data-value="birthday">Birthday Celebration</div>
-                                <div class="custom-option" data-value="proposal">Proposal</div>
-                                <div class="custom-option" data-value="business">Business Dinner</div>
-                                <div class="custom-option" data-value="date">Romantic Evening</div>
-                                <div class="custom-option" data-value="other">Other</div>
+                                <div class="custom-select-options-inner">
+                                    <div class="custom-option" data-value="anniversary">Anniversary</div>
+                                    <div class="custom-option" data-value="birthday">Birthday Celebration</div>
+                                    <div class="custom-option" data-value="proposal">Proposal</div>
+                                    <div class="custom-option" data-value="business">Business Dinner</div>
+                                    <div class="custom-option" data-value="date">Romantic Evening</div>
+                                    <div class="custom-option" data-value="other">Other</div>
+                                </div>
                             </div>
                         </div>
                         <input type="hidden" id="occasion" value="">

@@ -116,6 +116,14 @@
             height:1px;
             background:linear-gradient(90deg,transparent,var(--color-border),transparent);
         }
+        /* When in success mode (hero hidden), remove top padding and divider
+           so the success card sits flush against the header. */
+        body.is-success-view .booking-section {
+            padding-top: var(--space-24);
+        }
+        body.is-success-view .booking-section::before {
+            display: none;
+        }
         .booking-container { max-width:1100px; margin:0 auto; padding:0 var(--space-6); }
         @media(min-width:768px){ .booking-container{ padding:0 var(--space-10); } }
 
@@ -405,12 +413,23 @@
         .custom-select.open .custom-select-trigger svg { transform:rotate(180deg); }
         .custom-select-options {
             position:absolute; top:calc(100% + var(--space-2)); left:0; right:0;
-            background:var(--color-bg-elevated); border:1px solid var(--color-border);
-            border-radius:var(--radius-sm); z-index:100; overflow:hidden;
-            opacity:0; transform:translateY(-10px); pointer-events:none;
-            transition:all .3s cubic-bezier(0.16,1,0.3,1); box-shadow:var(--shadow-lg);
+            z-index:100;
+            opacity:0; pointer-events:none;
+            display:grid;
+            grid-template-rows:0fr;
+            transition:grid-template-rows .9s cubic-bezier(0.16,1,0.3,1),
+                       opacity .25s ease;
         }
-        .custom-select.open .custom-select-options { opacity:1; transform:translateY(0); pointer-events:all; }
+        .custom-select-options > .custom-select-options-inner {
+            overflow:hidden;
+            background:var(--color-bg-elevated);
+            border-radius:var(--radius-sm);
+            box-shadow:var(--shadow-lg);
+            border:1px solid transparent;
+            transition:border-color .25s ease;
+        }
+        .custom-select.open .custom-select-options { opacity:1; pointer-events:all; grid-template-rows:1fr; }
+        .custom-select.open .custom-select-options > .custom-select-options-inner { border-color:var(--color-border); }
         .custom-option {
             padding:var(--space-4) var(--space-5); font-family:var(--font-sans);
             font-size:var(--text-sm); font-weight:300; color:var(--color-text-secondary);
@@ -419,8 +438,7 @@
         .custom-option:last-child { border-bottom:none; }
         .custom-option:hover { background:var(--color-gold-muted); color:var(--color-gold); padding-left:var(--space-4); }
         .custom-option.selected { color:var(--color-gold); background:var(--color-gold-muted); }
-        .custom-select.drop-up .custom-select-options { top:auto; bottom:calc(100% + var(--space-2)); transform:translateY(10px); }
-        .custom-select.drop-up.open .custom-select-options { transform:translateY(0); }
+        .custom-select.drop-up .custom-select-options { top:auto; bottom:calc(100% + var(--space-2)); }
 
         /* ── Form grid ── */
         .form-grid { display:grid; grid-template-columns:1fr; gap:var(--space-6); margin-bottom:var(--space-10); }
@@ -916,12 +934,14 @@
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
                         </div>
                         <div class="custom-select-options" id="occasionOptions">
-                            <div class="custom-option" data-value="anniversary">Anniversary</div>
-                            <div class="custom-option" data-value="birthday">Birthday Celebration</div>
-                            <div class="custom-option" data-value="proposal">Proposal</div>
-                            <div class="custom-option" data-value="business">Business Dinner</div>
-                            <div class="custom-option" data-value="date">Romantic Evening</div>
-                            <div class="custom-option" data-value="other">Other</div>
+                            <div class="custom-select-options-inner">
+                                <div class="custom-option" data-value="anniversary">Anniversary</div>
+                                <div class="custom-option" data-value="birthday">Birthday Celebration</div>
+                                <div class="custom-option" data-value="proposal">Proposal</div>
+                                <div class="custom-option" data-value="business">Business Dinner</div>
+                                <div class="custom-option" data-value="date">Romantic Evening</div>
+                                <div class="custom-option" data-value="other">Other</div>
+                            </div>
                         </div>
                     </div>
                     <input type="hidden" id="occasion" value="">
@@ -1071,6 +1091,12 @@ const TEMPLATE_GUEST  = window.LUMIERE_CONFIG.emailjs.guestTemplate;
         }
     });
     return blocked;
+}
+
+// Disable browser scroll restoration page-wide so refresh/back never
+// auto-scrolls. Manual control via showSuccessState etc.
+if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
 }
 
 let currentStep = 1;
@@ -1244,7 +1270,8 @@ function adjustParty(change) {
 
     const dateVal = bookingDateInput.value;
     if (dateVal) triggerAvailability(dateVal, newVal);
-}
+}   
+
 
 function checkLargeGroupNotice() {
     clearTimeout(largeGroupDebounce);
@@ -1911,6 +1938,11 @@ function submitReservation() {
 
 // ── Success state ────────────────────────────────────────────
 function showSuccessState(fd, ft) {
+    // Hide hero, step indicator, and contact-alternative section so the
+    // success card is the focal point with only header and footer visible.
+    document.body.classList.add('is-success-view');
+    const hero = document.querySelector('.reservation-hero');
+    if (hero) hero.style.display = 'none';
     document.getElementById('stepsIndicator').style.display = 'none';
     document.getElementById('contactAlternative').style.display = 'none';
 
@@ -1956,10 +1988,13 @@ function showSuccessState(fd, ft) {
 
     document.getElementById('successState').classList.add('visible');
 
-    setTimeout(() => {
-        const el = document.getElementById('successState');
-        window.scrollTo({ top: window.pageYOffset + el.getBoundingClientRect().top - 30, behavior:'smooth' });
-    }, 300);
+    // Force scroll to top so the page opens cleanly under the navbar with
+    // no .scrolled state. Disable browser scroll restoration too so refresh
+    // and back-navigation also land at the top.
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
 }
 
 // ── Cancel / Modify navigation ───────────────────────────────
@@ -2205,9 +2240,16 @@ renderCountryList(countries);
 
     if (!bookingData.bookingId) return; // nothing to restore
 
-    // Hide the multi-step booking form
-    const booking = document.getElementById('bookingSection');
-    if (booking) booking.style.display = 'none';
+    // Hide hero, step indicator, all form steps, and contact alternative
+    // so the success card is the only thing visible between header and footer.
+    document.body.classList.add('is-success-view');
+    const hero = document.querySelector('.reservation-hero');
+    if (hero) hero.style.display = 'none';
+    const stepsInd = document.getElementById('stepsIndicator');
+    if (stepsInd) stepsInd.style.display = 'none';
+    document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
+    const contactAlt = document.getElementById('contactAlternative');
+    if (contactAlt) contactAlt.style.display = 'none';
 
     // Build formatted date and time for display
     const fd = bookingData.date
