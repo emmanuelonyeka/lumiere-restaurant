@@ -429,6 +429,10 @@
             transition:border-color .25s ease;
         }
         .custom-select.open .custom-select-options { opacity:1; pointer-events:all; grid-template-rows:1fr; }
+        .custom-select:not(.open) .custom-select-options {
+            transition: all 1.7s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 1;
+        }
         .custom-select.open .custom-select-options > .custom-select-options-inner { border-color:var(--color-border); }
         .custom-option {
             padding:var(--space-4) var(--space-5); font-family:var(--font-sans);
@@ -1252,9 +1256,15 @@ function adjustParty(change) {
     const prevVal = bookingData.party;
     let newVal = prevVal + change;
 
-    // Private dining: first press in either direction jumps to 10
-    if (isPrivate && prevVal < 10 && newVal < 10) {
-        newVal = 10;
+    // Private dining: hard minimum of 10. If user taps − at 10, show the
+    // toast (same wording / duration as the Continue-button validation)
+    // and bail without changing the number.
+    if (isPrivate) {
+        min = 10;
+        if (change < 0 && prevVal === 10) {
+            showToast('Private Dining requires a minimum party size of 10 guests.');
+            return;
+        }
     }
 
     newVal = Math.min(max, Math.max(min, newVal));
@@ -2063,11 +2073,16 @@ function goToModify() {
 }
 
 // ── Toast ─────────────────────────────────────────────────────
+let _toastTimer = null;
 function showToast(message) {
     const toast = document.getElementById('toast');
     document.getElementById('toastMessage').textContent = message;
     toast.classList.add('visible');
-    setTimeout(() => toast.classList.remove('visible'), 3500);
+    // Cancel any previous hide-timer so rapid back-to-back calls reset
+    // the countdown — toast stays visible for the full duration after
+    // the LAST call, not the first.
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => toast.classList.remove('visible'), 3500);
 }
 
 // ── Occasion dropdown ────────────────────────────────────────

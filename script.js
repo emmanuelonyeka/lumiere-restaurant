@@ -134,10 +134,10 @@ function initNavigation() {
     
             if (navMenu.classList.contains('active')) {
                 scrollY = window.scrollY;
+                document.body.style.top = `-${scrollY}px`;
+                document.body.style.width = '100%';
                 document.body.style.overflow = 'hidden';
                 document.body.style.position = 'fixed';
-                document.body.style.width = '100%';
-                document.body.style.top = `-${scrollY}px`;
             } else {
                 document.body.style.overflow = '';
                 document.body.style.position = '';
@@ -1458,8 +1458,12 @@ function initDatePicker(input) {
         const viewFirst = new Date(viewYear, viewMonth, 1);
         const todayFirst = new Date(today.getFullYear(), today.getMonth(), 1);
         const maxFirst = new Date(maxDate.getFullYear(), maxDate.getMonth(), 1);
-        prevBtn.disabled = viewFirst <= todayFirst;
-        nextBtn.disabled = viewFirst >= maxFirst;
+        // Use a class to visually disable rather than the disabled attribute,
+        // so iOS keeps treating the element as interactive (preserves
+        // touch-action: manipulation against double-tap zoom). Click handlers
+        // check this class to bail out.
+        prevBtn.classList.toggle('is-disabled', viewFirst <= todayFirst);
+        nextBtn.classList.toggle('is-disabled', viewFirst >= maxFirst);
 
         // Calculate grid: 6 rows × 7 cols, starting from Monday
         // JS getDay() returns 0=Sun..6=Sat, we want 0=Mon..6=Sun
@@ -1607,6 +1611,7 @@ function initDatePicker(input) {
 
     prevBtn.addEventListener('click', (e) => {
         e.stopPropagation();
+        if (prevBtn.classList.contains('is-disabled')) return;
         viewMonth--;
         if (viewMonth < 0) { viewMonth = 11; viewYear--; }
         render();
@@ -1614,6 +1619,7 @@ function initDatePicker(input) {
 
     nextBtn.addEventListener('click', (e) => {
         e.stopPropagation();
+        if (nextBtn.classList.contains('is-disabled')) return;
         viewMonth++;
         if (viewMonth > 11) { viewMonth = 0; viewYear++; }
         render();
