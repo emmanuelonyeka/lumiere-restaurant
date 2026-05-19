@@ -129,20 +129,33 @@ function initNavigation() {
     if (navToggle && navMenu) {
     
         navToggle.addEventListener('click', () => {
-            navToggle.classList.toggle('active');
-            navMenu.classList.toggle('active');
-    
-            if (navMenu.classList.contains('active')) {
+            const opening = !navMenu.classList.contains('active');
+
+            if (opening) {
+                // Capture scroll position BEFORE any class/style changes
                 scrollY = window.scrollY;
-                document.body.style.top = `-${scrollY}px`;
-                document.body.style.width = '100%';
-                document.body.style.overflow = 'hidden';
-                document.body.style.position = 'fixed';
+
+                // Force the browser to commit the menu's current off-screen
+                // state to the rendering pipeline. Reading offsetWidth
+                // triggers a synchronous layout — after this, the browser
+                // has a real "before" frame to animate from. Fixes iOS
+                // first-tap no-animation bug.
+                navMenu.offsetWidth;
+
+                // Apply scroll-lock in one atomic style write — using cssText
+                // avoids multiple intermediate layout passes that can cause
+                // a visible page jump on iOS.
+                document.body.style.cssText =
+                    `position:fixed; top:-${scrollY}px; width:100%; overflow:hidden;`;
+
+                // Now toggle the classes — animation starts cleanly
+                navToggle.classList.add('active');
+                navMenu.classList.add('active');
             } else {
-                document.body.style.overflow = '';
-                document.body.style.position = '';
-                document.body.style.width = '';
-                document.body.style.top = '';
+                navToggle.classList.remove('active');
+                navMenu.classList.remove('active');
+
+                document.body.style.cssText = '';
                 document.documentElement.style.scrollBehavior = 'auto';
                 window.scrollTo(0, scrollY);
                 setTimeout(() => {
