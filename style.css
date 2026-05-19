@@ -5207,6 +5207,8 @@ a.experience-card {
     padding: var(--space-5);
     width: 340px;
     user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
 }
 
 /* Desktop: dropdown positioning (panel in <body>, fixed via JS) */

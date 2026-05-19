@@ -1568,6 +1568,9 @@ function initDatePicker(input) {
     }
 
     // ── Open / close ───────────────────────────────────────
+    // Holds scroll position when picker opens on mobile (for lock/restore)
+    let lockedScrollY = 0;
+
     function open() {
         // If input was changed externally (e.g. quick-pick buttons), re-sync
         if (input.value) {
@@ -1581,8 +1584,10 @@ function initDatePicker(input) {
         }
         render();
 
+        const isMobile = !window.matchMedia('(min-width: 769px)').matches;
+
         // Position panel below trigger (desktop only — mobile uses CSS centering)
-        if (window.matchMedia('(min-width: 769px)').matches) {
+        if (!isMobile) {
             const rect = trigger.getBoundingClientRect();
             panel.style.top = `${rect.bottom + window.scrollY + 8}px`;
             panel.style.left = `${rect.left + window.scrollX}px`;
@@ -1590,6 +1595,13 @@ function initDatePicker(input) {
             // Clear desktop styles in case window was resized
             panel.style.top = '';
             panel.style.left = '';
+
+            // Lock page scroll on mobile while picker is open (matches nav-menu pattern)
+            lockedScrollY = window.scrollY;
+            document.body.style.top = `-${lockedScrollY}px`;
+            document.body.style.width = '100%';
+            document.body.style.overflow = 'hidden';
+            document.body.style.position = 'fixed';
         }
 
         panel.classList.add('is-open');
@@ -1598,9 +1610,23 @@ function initDatePicker(input) {
     }
 
     function close() {
+        const wasMobileLocked = document.body.style.position === 'fixed';
+
         panel.classList.remove('is-open');
         backdrop.classList.remove('is-open');
         trigger.classList.remove('is-open');
+
+        if (wasMobileLocked) {
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+            document.body.style.top = '';
+            document.documentElement.style.scrollBehavior = 'auto';
+            window.scrollTo(0, lockedScrollY);
+            setTimeout(() => {
+                document.documentElement.style.scrollBehavior = '';
+            }, 0);
+        }
     }
 
     trigger.addEventListener('click', (e) => {
