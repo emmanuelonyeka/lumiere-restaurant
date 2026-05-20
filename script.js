@@ -129,39 +129,8 @@ function initNavigation() {
     if (navToggle && navMenu) {
     
         navToggle.addEventListener('click', () => {
-            const opening = !navMenu.classList.contains('active');
-
-            if (opening) {
-                // Capture scroll position BEFORE any class/style changes
-                scrollY = window.scrollY;
-
-                // Force the browser to commit the menu's current off-screen
-                // state to the rendering pipeline. Reading offsetWidth
-                // triggers a synchronous layout — after this, the browser
-                // has a real "before" frame to animate from. Fixes iOS
-                // first-tap no-animation bug.
-                navMenu.offsetWidth;
-
-                // Apply scroll-lock in one atomic style write — using cssText
-                // avoids multiple intermediate layout passes that can cause
-                // a visible page jump on iOS.
-                document.body.style.cssText =
-                    `position:fixed; top:-${scrollY}px; width:100%; overflow:hidden;`;
-
-                // Now toggle the classes — animation starts cleanly
-                navToggle.classList.add('active');
-                navMenu.classList.add('active');
-            } else {
-                navToggle.classList.remove('active');
-                navMenu.classList.remove('active');
-
-                document.body.style.cssText = '';
-                document.documentElement.style.scrollBehavior = 'auto';
-                window.scrollTo(0, scrollY);
-                setTimeout(() => {
-                    document.documentElement.style.scrollBehavior = '';
-                }, 0);
-            }
+            navToggle.classList.toggle('active');
+            navMenu.classList.toggle('active');
         });
     
         // Close mobile menu when clicking a link
@@ -169,15 +138,6 @@ function initNavigation() {
             link.addEventListener('click', () => {
                 navToggle.classList.remove('active');
                 navMenu.classList.remove('active');
-                document.body.style.overflow = '';
-                document.body.style.position = '';
-                document.body.style.width = '';
-                document.body.style.top = '';
-                document.documentElement.style.scrollBehavior = 'auto';
-                window.scrollTo(0, scrollY);
-                setTimeout(() => {
-                    document.documentElement.style.scrollBehavior = '';
-                }, 0);
             });
         });
     }
@@ -1471,10 +1431,7 @@ function initDatePicker(input) {
         const viewFirst = new Date(viewYear, viewMonth, 1);
         const todayFirst = new Date(today.getFullYear(), today.getMonth(), 1);
         const maxFirst = new Date(maxDate.getFullYear(), maxDate.getMonth(), 1);
-        // Use a class to visually disable rather than the disabled attribute,
-        // so iOS keeps treating the element as interactive (preserves
-        // touch-action: manipulation against double-tap zoom). Click handlers
-        // check this class to bail out.
+        
         prevBtn.classList.toggle('is-disabled', viewFirst <= todayFirst);
         nextBtn.classList.toggle('is-disabled', viewFirst >= maxFirst);
 
