@@ -1869,6 +1869,37 @@ function initDatePicker(input) {
     }
 })();
 
+/**
+ * ========================================
+ * TOUCH TAP FEEDBACK
+ * iOS Safari's :active pseudo-class doesn't always fire visibly on quick
+ * taps. This script adds an .is-tapping class to interactive elements via
+ * touch events, guaranteeing the scale-down feedback is seen.
+ *
+ * CSS rules in style.css target .is-tapping with the same transform
+ * values that :active uses.
+ * ========================================
+ */
+(function() {
+    const TAP_SELECTOR = '.magnetic-btn, .menu-show-all, .experience-card, .sticky-reserve';
+    const HOLD_MS = 200; // minimum time the .is-tapping class stays on (so quick taps remain visible)
+
+    document.addEventListener('touchstart', (e) => {
+        const el = e.target.closest(TAP_SELECTOR);
+        if (!el) return;
+        el.classList.add('is-tapping');
+    }, { passive: true });
+
+    function clear(e) {
+        const el = e.target.closest(TAP_SELECTOR);
+        if (!el) return;
+        // Keep the class for at least HOLD_MS to ensure the scale-down is visible
+        setTimeout(() => el.classList.remove('is-tapping'), HOLD_MS);
+    }
+
+    document.addEventListener('touchend', clear, { passive: true });
+    document.addEventListener('touchcancel', clear, { passive: true });
+})();
 
 /**
  * ======================================== ;

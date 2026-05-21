@@ -1027,18 +1027,24 @@ navigation) and provide quick scale-down tap feedback instead. */
         color: var(--color-text-primary) !important;
     }
 
-    /* Tap feedback scale-down on interactive elements */
-    .magnetic-btn:active {
+    /* Tap feedback scale-down on interactive elements. Uses both :active
+    (for browsers that honor it) and .is-tapping (a JS-driven fallback
+    for iOS Safari, which doesn't always fire :active on quick taps). */
+    .magnetic-btn:active,
+    .magnetic-btn.is-tapping {
         transform: scale(0.97) !important;
         transition: transform 0.1s ease !important;
     }
     .menu-show-all:active,
-    .experience-card:active {
+    .menu-show-all.is-tapping,
+    .experience-card:active,
+    .experience-card.is-tapping {
         transform: scale(0.95) !important;
         transition: transform 0.1s ease !important;
     }
     /* Sticky-reserve uses translateX(-50%) for centering — must preserve it */
-    .sticky-reserve.visible:active {
+    .sticky-reserve.visible:active,
+    .sticky-reserve.visible.is-tapping {
         transform: translateX(-50%) translateY(0) scale(0.95) !important;
         transition: transform 0.1s ease !important;
     }
