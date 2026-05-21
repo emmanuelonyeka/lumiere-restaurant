@@ -988,6 +988,16 @@ button {
     transition: transform 0.3s ease, color 0.4s ease;
 }
 
+/* Tap feedback on touch devices — subtle scale-down so users get confirmation
+   the button received their tap. Replaces the hover animation which doesn't
+   complete on touch before navigation occurs. */
+   @media (hover: none) {
+    .magnetic-btn:active {
+        transform: scale(0.95);
+        transition: transform 0.1s ease;
+    }
+}
+
 /* ========================================
    SECTION STYLES - ENHANCED
    ======================================== */
