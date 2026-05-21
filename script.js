@@ -129,8 +129,13 @@ function initNavigation() {
     if (navToggle && navMenu) {
     
         navToggle.addEventListener('click', () => {
+            const opening = !navMenu.classList.contains('active');
             navToggle.classList.toggle('active');
             navMenu.classList.toggle('active');
+            // Lock scroll using a class-based approach (no position:fixed,
+            // no body style writes — avoids iOS WebKit's layout-reflow blink).
+            document.documentElement.classList.toggle('is-scroll-locked', opening);
+            document.body.classList.toggle('is-scroll-locked', opening);
         });
     
         // Close mobile menu when clicking a link
@@ -138,6 +143,8 @@ function initNavigation() {
             link.addEventListener('click', () => {
                 navToggle.classList.remove('active');
                 navMenu.classList.remove('active');
+                document.documentElement.classList.remove('is-scroll-locked');
+                document.body.classList.remove('is-scroll-locked');
             });
         });
     }

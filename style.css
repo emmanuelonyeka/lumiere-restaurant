@@ -164,6 +164,20 @@ html {
     scrollbar-color: var(--color-gold-dark) transparent;
 }
 
+/* Scroll-lock applied when the mobile menu (or any overlay) is open.
+   Uses touch-action + overflow:hidden instead of position:fixed to avoid
+   the layout-reflow blink on iOS WebKit. */
+body.is-scroll-locked {
+    overflow: hidden;
+    touch-action: none;
+    -webkit-overflow-scrolling: auto;
+    overscroll-behavior: contain;
+}
+
+html.is-scroll-locked {
+    overflow: hidden;
+}
+
 img {
     max-width: 100%;
     height: auto;
