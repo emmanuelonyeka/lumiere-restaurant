@@ -805,7 +805,7 @@ and would otherwise win on the shared element. */
 }
 
 /* Touch devices: suppress the hover color shift on Explore Menu CTA */
-@media (hover: none) {
+@media (hover: none), (pointer: coarse) {
     .magnetic-btn.hero-cta-secondary:hover,
     .magnetic-btn.hero-cta-secondary:hover span,
     .magnetic-btn.hero-cta-secondary:hover svg {
@@ -1001,8 +1001,10 @@ and would otherwise win on the shared element. */
 }
 
 /* Touch devices: suppress hover animations (they can't complete before
-   navigation) and provide quick scale-down tap feedback instead. */
-   @media (hover: none) {
+navigation) and provide quick scale-down tap feedback instead. */
+/* Touch devices: suppress hover animations (they can't complete before
+navigation) and provide quick scale-down tap feedback instead. */
+@media (hover: none), (pointer: coarse) {
     /* Suppress hover-related visual changes on touch — keep base look */
     .magnetic-btn:hover::before {
         transform: scaleX(0) !important;
@@ -1015,12 +1017,6 @@ and would otherwise win on the shared element. */
     .magnetic-btn:hover span {
         color: var(--color-bg-primary) !important;
     }
-    /* Tap feedback */
-    .magnetic-btn:active {
-        transform: scale(0.97) !important;
-        transition: transform 0.1s ease !important;
-    }
-
     /* Secondary variants have white text by default — restore correctly */
     .magnetic-btn.secondary:hover,
     .magnetic-btn.secondary:hover span,
@@ -1030,18 +1026,15 @@ and would otherwise win on the shared element. */
     .hero-cta-secondary:hover svg {
         color: var(--color-text-primary) !important;
     }
-}
 
-/* Tap feedback on touch devices for additional interactive elements
-   (matches the magnetic-btn pattern). Subtle 0.95 scale-down with quick
-   spring-back. Only applies to touch — cursor devices still use hover. */
-   @media (hover: none) {
-    .menu-show-all:active {
-        transform: scale(0.95) !important;
+    /* Tap feedback scale-down on interactive elements */
+    .magnetic-btn:active {
+        transform: scale(0.97) !important;
         transition: transform 0.1s ease !important;
     }
+    .menu-show-all:active,
     .experience-card:active {
-        transform: scale(0.97) !important;
+        transform: scale(0.95) !important;
         transition: transform 0.1s ease !important;
     }
     /* Sticky-reserve uses translateX(-50%) for centering — must preserve it */
