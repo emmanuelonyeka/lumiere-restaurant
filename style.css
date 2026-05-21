@@ -781,25 +781,37 @@ button {
     }
 }
 
-/* Secondary ghost style */
-.hero-cta-secondary {
+/* Secondary ghost style — selectors include .magnetic-btn for higher
+specificity, since .magnetic-btn's base rules appear later in the file
+and would otherwise win on the shared element. */
+.magnetic-btn.hero-cta-secondary {
     background: transparent;
     color: var(--color-text-primary);
     border-color: rgba(250, 248, 245, 0.4);
 }
 
-.hero-cta-secondary::before {
-    background: rgba(250, 248, 245, 0.08);
+.magnetic-btn.hero-cta-secondary::before {
+    background: var(--color-text-primary);
 }
 
-.hero-cta-secondary:hover {
-    color: var(--color-text-primary);
-    border-color: rgba(250, 248, 245, 0.8);
+.magnetic-btn.hero-cta-secondary:hover {
+    color: var(--color-bg-primary);
+    border-color: var(--color-text-primary);
 }
 
-.hero-cta-secondary:hover span,
-.hero-cta-secondary:hover svg {
-    color: var(--color-text-primary);
+.magnetic-btn.hero-cta-secondary:hover span,
+.magnetic-btn.hero-cta-secondary:hover svg {
+    color: var(--color-bg-primary);
+}
+
+/* Touch devices: suppress the hover color shift on Explore Menu CTA */
+@media (hover: none) {
+    .magnetic-btn.hero-cta-secondary:hover,
+    .magnetic-btn.hero-cta-secondary:hover span,
+    .magnetic-btn.hero-cta-secondary:hover svg {
+        color: var(--color-text-primary) !important;
+        border-color: rgba(250, 248, 245, 0.4) !important;
+    }
 }
 
 @media (max-width: 480px) {
@@ -988,13 +1000,54 @@ button {
     transition: transform 0.3s ease, color 0.4s ease;
 }
 
-/* Tap feedback on touch devices — subtle scale-down so users get confirmation
-   the button received their tap. Replaces the hover animation which doesn't
-   complete on touch before navigation occurs. */
+/* Touch devices: suppress hover animations (they can't complete before
+   navigation) and provide quick scale-down tap feedback instead. */
    @media (hover: none) {
+    /* Suppress hover-related visual changes on touch — keep base look */
+    .magnetic-btn:hover::before {
+        transform: scaleX(0) !important;
+    }
+    .magnetic-btn:hover svg {
+        transform: none !important;
+        color: var(--color-bg-primary) !important;
+    }
+    .magnetic-btn:hover,
+    .magnetic-btn:hover span {
+        color: var(--color-bg-primary) !important;
+    }
+    /* Tap feedback */
     .magnetic-btn:active {
-        transform: scale(0.95);
-        transition: transform 0.1s ease;
+        transform: scale(0.97) !important;
+        transition: transform 0.1s ease !important;
+    }
+
+    /* Secondary variants have white text by default — restore correctly */
+    .magnetic-btn.secondary:hover,
+    .magnetic-btn.secondary:hover span,
+    .magnetic-btn.secondary:hover svg,
+    .hero-cta-secondary:hover,
+    .hero-cta-secondary:hover span,
+    .hero-cta-secondary:hover svg {
+        color: var(--color-text-primary) !important;
+    }
+}
+
+/* Tap feedback on touch devices for additional interactive elements
+   (matches the magnetic-btn pattern). Subtle 0.95 scale-down with quick
+   spring-back. Only applies to touch — cursor devices still use hover. */
+   @media (hover: none) {
+    .menu-show-all:active {
+        transform: scale(0.95) !important;
+        transition: transform 0.1s ease !important;
+    }
+    .experience-card:active {
+        transform: scale(0.97) !important;
+        transition: transform 0.1s ease !important;
+    }
+    /* Sticky-reserve uses translateX(-50%) for centering — must preserve it */
+    .sticky-reserve.visible:active {
+        transform: translateX(-50%) translateY(0) scale(0.95) !important;
+        transition: transform 0.1s ease !important;
     }
 }
 
@@ -3165,16 +3218,19 @@ button {
     transition: opacity 0.4s ease;
 }
 
-.experience-card:hover,
-.experience-card.reveal.active:hover,
-a.experience-card.reveal.active:hover {
-    transform: translateY(-8px) !important;
-    border-color: var(--color-border-hover);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(198, 167, 105, 0.15);
-}
+/* Hover lift + glow — cursor devices only */
+@media (hover: hover) and (pointer: fine) {
+    .experience-card:hover,
+    .experience-card.reveal.active:hover,
+    a.experience-card.reveal.active:hover {
+        transform: translateY(-8px) !important;
+        border-color: var(--color-border-hover);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(198, 167, 105, 0.15);
+    }
 
-.experience-card:hover::before {
-    opacity: 1;
+    .experience-card:hover::before {
+        opacity: 1;
+    }
 }
 
 .experience-card.featured {
@@ -3188,14 +3244,6 @@ a.experience-card {
     color: inherit;
     cursor: pointer;
 }
-
-/* Mobile tap animation */
-@media (pointer: coarse) {
-    a.experience-card:active {
-        transform: translateY(-8px);
-        border-color: var(--color-border-hover);
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(198, 167, 105, 0.15);}
-    }
 
 .experience-badge {
     position: absolute;
