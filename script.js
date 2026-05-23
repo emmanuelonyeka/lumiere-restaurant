@@ -31,12 +31,25 @@ document.addEventListener('DOMContentLoaded', () => {
 function initPageLoader() {
     const loader = document.querySelector('.page-loader');
     if (!loader) return;
-    
+
+    // Prevent scroll while the loader is showing. Uses the existing
+    // .is-scroll-locked class (defined in style.css and already used
+    // by the mobile menu) so we share one scroll-lock system instead
+    // of writing inline styles. The class applies overflow:hidden to
+    // both <html> and <body>, plus touch-action:none — which is what
+    // iOS Safari actually needs (body-only overflow doesn't block
+    // scrolling on iOS).
+    document.documentElement.classList.add('is-scroll-locked');
+    document.body.classList.add('is-scroll-locked');
+
     // Hide loader after content loads, then trigger hero animations
     window.addEventListener('load', () => {
         setTimeout(() => {
             loader.classList.add('hidden');
-            document.body.style.overflow = '';
+
+            // Release the scroll lock once the loader starts fading.
+            document.documentElement.classList.remove('is-scroll-locked');
+            document.body.classList.remove('is-scroll-locked');
 
             // Match the loader's CSS fade-out duration before starting
             // hero animations, so they begin as the loader disappears.
@@ -45,9 +58,6 @@ function initPageLoader() {
             }, 400);
         }, 1800);
     });
-    
-    // Prevent scroll during loading
-    document.body.style.overflow = 'hidden';
 }
 
 /**
@@ -145,6 +155,30 @@ function initNavigation() {
                 navMenu.classList.remove('active');
                 document.documentElement.classList.remove('is-scroll-locked');
                 document.body.classList.remove('is-scroll-locked');
+
+                // Resync the sticky reserve button after the anchor jump.
+                // The IntersectionObserver watching the hero can miss the
+                // state change because scroll-lock removal + anchor scroll
+                // happen in the same frame, leaving the button stuck hidden.
+                // We re-check the hero's position once the browser has
+                // settled into the new scroll position.
+                setTimeout(() => {
+                    const stickyBtn = document.getElementById('stickyReserve');
+                    const hero = document.getElementById('home');
+                    if (!stickyBtn || !hero) return;
+                    const heroBottom = hero.getBoundingClientRect().bottom;
+                    if (heroBottom <= 0) {
+                        // Hero is fully scrolled past — show the button
+                        stickyBtn.classList.remove('hidden');
+                        stickyBtn.classList.add('visible');
+                    } else {
+                        // Hero still visible — keep button hidden
+                        stickyBtn.classList.remove('visible');
+                        stickyBtn.classList.add('hidden');
+                    }
+                    // Also clear the menu-open class in case it lingered
+                    stickyBtn.classList.remove('menu-open');
+                }, 600); // 600ms covers smooth-scroll anchor jumps comfortably
             });
         });
     }
@@ -1924,11 +1958,11 @@ function initDatePicker(input) {
     ].join(', ');
     const HOLD_MS = 200; // minimum time the .is-tapping class stays on (so quick taps remain visible)
 
-    document.addEventListener('touchstart', (e) => {
+    function addTapping(e) {
         const el = e.target.closest(TAP_SELECTOR);
         if (!el) return;
         el.classList.add('is-tapping');
-    }, { passive: true });
+    }
 
     function clear(e) {
         const el = e.target.closest(TAP_SELECTOR);
@@ -1937,8 +1971,20 @@ function initDatePicker(input) {
         setTimeout(() => el.classList.remove('is-tapping'), HOLD_MS);
     }
 
-    document.addEventListener('touchend', clear, { passive: true });
-    document.addEventListener('touchcancel', clear, { passive: true });
+    // Listen to BOTH touch and pointer events. iOS Safari swallows
+    // touchstart on <label> elements that wrap hidden radio/checkbox
+    // inputs (the reservation page's .experience-option uses this
+    // pattern), but pointerdown still fires reliably. Listening to both
+    // covers every device + element-type combination without firing
+    // twice — addTapping is idempotent: adding an already-present class
+    // is a no-op.
+    document.addEventListener('pointerdown', addTapping, { passive: true });
+    document.addEventListener('touchstart',  addTapping, { passive: true });
+
+    document.addEventListener('pointerup',     clear, { passive: true });
+    document.addEventListener('pointercancel', clear, { passive: true });
+    document.addEventListener('touchend',      clear, { passive: true });
+    document.addEventListener('touchcancel',   clear, { passive: true });
 })();
 
 /**
