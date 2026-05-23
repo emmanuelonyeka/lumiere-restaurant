@@ -1048,6 +1048,129 @@ navigation) and provide quick scale-down tap feedback instead. */
         transform: translateX(-50%) translateY(0) scale(0.95) !important;
         transition: transform 0.1s ease !important;
     }
+
+    /* ── Reservation / modify / cancel / confirm flow buttons ──
+       Two scale tiers:
+         • 0.97 — primary CTAs with the gold sliding-fill effect
+         • 0.95 — smaller / secondary / ghost buttons             */
+
+    /* Suppress sliding-fill hover on primary CTAs (lingers after nav on touch) */
+    .btn-next:hover::before,
+    .btn-submit-modify:hover::before,
+    .btn-yes:hover::before {
+        transform: scaleX(0) !important;
+    }
+    .btn-next:hover,
+    .btn-next:hover span,
+    .btn-next:hover svg,
+    .btn-submit-modify:hover,
+    .btn-submit-modify:hover span,
+    .btn-submit-modify:hover svg,
+    .btn-yes:hover,
+    .btn-yes:hover span,
+    .btn-yes:hover svg {
+        color: var(--color-bg-primary) !important;
+        transform: none !important;
+    }
+
+    /* Suppress SVG arrow-translate on back / cancel-modify hover */
+    .btn-back:hover,
+    .btn-back:hover svg {
+        color: var(--color-text-tertiary) !important;
+    }
+    .btn-back:hover svg {
+        transform: none !important;
+    }
+    .btn-cancel-modify:hover {
+        color: var(--color-text-tertiary) !important;
+    }
+
+    /* Tap feedback — primary CTAs */
+    .btn-next:active,
+    .btn-next.is-tapping,
+    .btn-submit-modify:active,
+    .btn-submit-modify.is-tapping,
+    .btn-yes:active,
+    .btn-yes.is-tapping {
+        transform: scale(0.97) !important;
+        transition: transform 0.1s ease !important;
+    }
+
+    /* Tap feedback — secondary / smaller buttons */
+    .btn-back:active,
+    .btn-back.is-tapping,
+    .btn-cancel-modify:active,
+    .btn-cancel-modify.is-tapping,
+    .btn-cancel-confirm:active,
+    .btn-cancel-confirm.is-tapping,
+    .btn-keep:active,
+    .btn-keep.is-tapping,
+    .btn-retry:active,
+    .btn-retry.is-tapping,
+    .btn-no:active,
+    .btn-no.is-tapping,
+    .success-btn:active,
+    .success-btn.is-tapping,
+    .post-btn:active,
+    .post-btn.is-tapping,
+    .party-btn:active,
+    .party-btn.is-tapping,
+    .error-btn-primary:active,
+    .error-btn-primary.is-tapping,
+    .error-btn-ghost:active,
+    .error-btn-ghost.is-tapping,
+    .nav-cta:active,
+    .nav-cta.is-tapping,
+    .experience-option:active,
+    .experience-option.is-tapping {
+        transform: scale(0.95) !important;
+        transition: transform 0.1s ease !important;
+    }
+
+    /* Suppress hover sliding-fill on .nav-cta (lingers after nav on touch) */
+    .nav-cta:hover::before {
+        transform: scaleX(0) !important;
+    }
+    .nav-cta:hover {
+        color: var(--color-text-primary) !important;
+    }
+
+    /* Kill the translateY lift + gold glow on .experience-option for touch —
+       hover state lingers after tap, and the selected state already gives
+       the right visual feedback. */
+    .experience-option:hover,
+    .experience-option.selected:hover {
+        transform: none !important;
+        border-color: var(--color-border) !important;
+        box-shadow: none !important;
+    }
+    .experience-option:hover::before {
+        opacity: 0 !important;
+    }
+    /* But keep the selected state looking selected, even mid-hover */
+    .experience-option.selected:hover {
+        border-color: var(--color-gold) !important;
+    }
+    .experience-option.selected:hover::before {
+        opacity: 1 !important;
+    }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   iOS / Android zoom-on-focus fix
+   Mobile Safari zooms into any input whose computed font-size
+   is < 16px. The reservation flow uses --text-base (15px) and
+   --text-sm (13px) on inputs — both trigger zoom. Force 16px
+   on small viewports to suppress it.
+   ───────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .form-input,
+    .form-select,
+    .form-textarea,
+    .country-search-input,
+    .phone-number-input {
+        font-size: 16px !important;
+    }
 }
 
 /* ========================================
@@ -2619,6 +2742,7 @@ navigation) and provide quick scale-down tap feedback instead. */
 .rating-item {
     flex: 1;
     min-width: 140px;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;

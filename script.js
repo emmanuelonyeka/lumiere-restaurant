@@ -1544,6 +1544,17 @@ function initDatePicker(input) {
         trigger.classList.remove('is-placeholder');
     }
 
+    // Listen for external clears / resets — when other code sets
+    // input.value = '' and dispatches 'change', the picker should
+    // forget its internal selectedDate and revert to the placeholder.
+    // Without this, the trigger keeps showing the stale date label.
+    input.addEventListener('change', () => {
+        if (input.value === '' && selectedDate !== null) {
+            selectedDate = null;
+            updateTriggerDisplay();
+        }
+    });
+
     // ── Open / close ───────────────────────────────────────
     // Holds scroll position when picker opens on mobile (for lock/restore)
     let lockedScrollY = 0;
@@ -1881,7 +1892,36 @@ function initDatePicker(input) {
  * ========================================
  */
 (function() {
-    const TAP_SELECTOR = '.magnetic-btn, .menu-show-all, .experience-card, .sticky-reserve';
+    const TAP_SELECTOR = [
+        // Homepage
+        '.magnetic-btn',
+        '.menu-show-all',
+        '.experience-card',
+        '.sticky-reserve',
+        // Reservation flow — primary CTAs (Continue / Save / Yes)
+        '.btn-next',
+        '.btn-submit-modify',
+        '.btn-yes',
+        // Reservation flow — secondary / ghost buttons
+        '.btn-back',
+        '.btn-cancel-modify',
+        '.btn-cancel-confirm',
+        '.btn-keep',
+        '.btn-retry',
+        '.btn-no',
+        // Success / post-action buttons
+        '.success-btn',
+        '.post-btn',
+        // Party-size stepper
+        '.party-btn',
+        // 404 page
+        '.error-btn-primary',
+        '.error-btn-ghost',
+        // Nav "Reserve" button (every page)
+        '.nav-cta',
+        // Reservation page — experience picker cards
+        '.experience-option'
+    ].join(', ');
     const HOLD_MS = 200; // minimum time the .is-tapping class stays on (so quick taps remain visible)
 
     document.addEventListener('touchstart', (e) => {
