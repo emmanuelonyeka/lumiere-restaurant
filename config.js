@@ -35,10 +35,10 @@ window.LUMIERE_CONFIG = {
      * pages send. See README for the full field list.
      */
     emailjs: {
-        publicKey:     'RWnXJqkGSNcLpgYlv',
-        serviceId:     'lumiere-service',
-        guestTemplate: 'template_xkb0vwz',
-        staffTemplate: 'template_8dzz3nu'
+        publicKey:     'YOUR_EMAILJS_PUBLIC_KEY',
+        serviceId:     'YOUR_EMAILJS_SERVICE_ID',
+        guestTemplate: 'YOUR_GUEST_TEMPLATE_ID',
+        staffTemplate: 'YOUR_STAFF_TEMPLATE_ID'
     },
 
     /**
