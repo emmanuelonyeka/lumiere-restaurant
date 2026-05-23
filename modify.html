@@ -23,12 +23,51 @@
     <style>
         *, *::before, *::after { -webkit-tap-highlight-color: transparent; }
 
-        /* ── Page wrapper ── */
-        .modify-page {
+        /* Sticky-footer setup: make body a flex column so the footer
+           always sits at the bottom of the viewport on short pages.
+           Any "page-state" content (the form view, invalid-state,
+           or future states) gets flex-grow so it absorbs leftover
+           space, keeping the footer pinned to the bottom regardless
+           of which state is showing. */
+           body {
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modify-page,
+        .invalid-state.visible {
+            flex: 1 0 auto;
+            display: block;          /* override the default flex-item
+                                        display value; needed because
+                                        .invalid-state uses .visible to
+                                        toggle from display:none */
+        }
+
+        .modify-page {
             background: var(--color-bg-primary);
             padding-top: 100px;
             padding-bottom: var(--space-24);
+        }
+
+        /* Invalid-state needs enough top padding to clear the fixed nav,
+           and centred content vertically when the viewport is tall. */
+        .invalid-state.visible {
+            padding-top: var(--space-32);
+            padding-bottom: var(--space-12);
+        }
+
+        .footer-slim {
+            flex-shrink: 0;          /* never let the footer collapse */
+        }
+
+        /* When success state is showing, the page no longer needs to be
+           full-viewport-tall — collapse it to its natural height so the
+           footer sits right beneath the action buttons instead of leaving
+           a huge gap. */
+        .modify-page:has(.success-state.visible) {
+            min-height: 0;
+            padding-bottom: var(--space-12);
         }
 
         .modify-container {
@@ -599,14 +638,26 @@
             color: var(--color-text-secondary);
         }
 
-        /* ── Success state ── */
-        .success-state {
+        /* ── Success state ──
+           Small top padding so the icon + "Reservation Updated" heading
+           land near the top of the viewport when the success state
+           appears (the page already has 100px top padding from .modify-page
+           to clear the fixed nav). */
+           .success-state {
             display: none;
             text-align: center;
-            padding: var(--space-24) var(--space-6);
+            padding: var(--space-32) var(--space-6);
+            opacity: 0;
+            transform: translateY(60px);
+            transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 1s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .success-state.visible { display: block; }
+        .success-state.visible {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
 
         .success-icon {
             width: 80px; height: 80px;
@@ -774,9 +825,9 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                 <span>Call Us Directly</span>
             </a>
-            <a href="index.html" class="success-btn success-btn-wa">
+            <a href="index.html" class="success-btn success-btn-home">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                <span>Back to Home</span>
+                <span>Back to Lumière</span>
             </a>
         </div>
     </div>
@@ -813,7 +864,7 @@
             <div class="success-actions">
                 <a href="index.html" class="success-btn success-btn-home">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                    <span>Back to Homepage</span>
+                    <span>Back to Lumière</span>
                 </a>
                 <a href="#" id="successWhatsapp" class="success-btn success-btn-wa" target="_blank" rel="noopener noreferrer">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -1740,8 +1791,19 @@ function submitModification() {
         // Set whatsapp on success screen
         document.getElementById('successWhatsapp').href = waUrl;
 
-        document.getElementById('successState').classList.add('visible');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Jump to top BEFORE revealing the success state, so the user
+        // sees "Reservation Updated" appear at the top of the viewport
+        // rather than wherever the form was scrolled to.
+        window.scrollTo({ top: 0, behavior: 'instant' });
+
+        // Two-step reveal: first display: block (still opacity 0 + below),
+        // then on the next frame apply the .visible class so the transition
+        // animates from the starting state instead of skipping it.
+        const successEl = document.getElementById('successState');
+        successEl.style.display = 'block';
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => successEl.classList.add('visible'));
+        });
     })
     .catch(err => {
         console.error('Modification email error:', err);
@@ -1757,7 +1819,15 @@ function submitModification() {
             }));
         } catch(e) {}
         document.getElementById('modifyForm').style.display = 'none';
-        document.getElementById('successState').classList.add('visible');
+        document.getElementById('originalBanner').style.display = 'none';
+        document.querySelector('.modify-header').style.display = 'none';
+        window.scrollTo({ top: 0, behavior: 'instant' });
+
+        const successEl = document.getElementById('successState');
+        successEl.style.display = 'block';
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => successEl.classList.add('visible'));
+        });
     });
 }
 

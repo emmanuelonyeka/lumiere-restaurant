@@ -105,12 +105,27 @@
         .hero-divider-line:last-child { background:linear-gradient(90deg,var(--color-gold),transparent); }
         .hero-divider-diamond { width:6px; height:6px; background:var(--color-gold); transform:rotate(45deg); }
 
+        /* Sticky-footer setup: make body a flex column so the footer
+           always sits at the bottom of the viewport on short pages.
+           The booking section absorbs any leftover space. */
+           body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .footer,
+        .footer-slim {
+            flex-shrink: 0;
+        }
+
         /* ── Booking wrapper ── */
         .booking-section {
+            flex: 1 0 auto;          /* grow to push footer to bottom */
             padding: var(--space-24) 0;
             background: var(--color-bg-primary);
             position: relative;
         }
+
         .booking-section::before {
             content:''; position:absolute; top:0; left:0; right:0;
             height:1px;
@@ -510,15 +525,42 @@
         @media(max-width:480px){ .form-actions{flex-direction:column-reverse;align-items:stretch;} .btn-next{width:100%;justify-content:center;} .btn-back{justify-content:center;} }
 
         /* ── Step loader (full page) ── */
-        .step-loader { display:none; flex-direction:column; align-items:center; justify-content:center; padding:var(--space-32) var(--space-6); gap:var(--space-8); }
-        .step-loader.visible { display:flex; }
+        /* Step loader — when visible, occupies a full viewport height
+        (with the fixed navbar overlaying the top 100px). scrollIntoView
+        in the JS pins it to the top of the viewport so the user's whole
+        screen is just navbar + centered spinner. */
+        .step-loader {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-6) var(--space-6);
+            gap: var(--space-8);
+        }
+        .step-loader.visible {
+            display: flex;
+            min-height: 100vh;
+        }
         .step-loader-spinner { width:56px; height:56px; border-radius:50%; border:1px solid var(--color-border); border-top:2px solid var(--color-gold); animation:spinLoader .8s linear infinite; }
         @keyframes spinLoader { to{transform:rotate(360deg);} }
         .step-loader-text { font-family:var(--font-serif); font-size:var(--text-xl); font-weight:300; font-style:italic; color:var(--color-text-secondary); letter-spacing:.05em; }
 
-        /* ── Success state ── */
-        .success-state { display:none; text-align:center; padding:var(--space-24) var(--space-6); animation:stepFadeIn .8s cubic-bezier(0.16,1,0.3,1) forwards; }
-        .success-state.visible { display:block; }
+        /* Success state — uses the same reveal pattern as modify.html
+        for cross-page consistency: 60px rise, 1s ease-out. */
+        .success-state {
+            display: none;
+            text-align: center;
+            padding: var(--space-24) var(--space-6);
+            opacity: 0;
+            transform: translateY(60px);
+            transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .success-state.visible {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
         .success-icon { width:80px; height:80px; border-radius:50%; border:1px solid var(--color-gold); display:flex; align-items:center; justify-content:center; margin:0 auto var(--space-8); color:var(--color-gold); animation:pulseGold 2s ease infinite; }
         @keyframes pulseGold { 0%,100%{box-shadow:0 0 0 0 var(--color-gold-glow);} 50%{box-shadow:0 0 0 20px transparent;} }
         .success-icon svg { width:36px; height:36px; }
@@ -546,9 +588,35 @@
         .success-btn-modify:hover { background:var(--color-gold-muted); border-color:var(--color-gold); }
         .success-btn-message { background:var(--color-gold); color:var(--color-bg-primary); border:1px solid var(--color-gold); }
         .success-btn-message:hover { background:transparent; color:var(--color-gold); }
+
+        /* Ghost "Back to Lumière" — sits below the primary action row,
+           visually separated. Subtle border, gold text, transparent bg. */
+        .success-btn-home-ghost {
+            display:inline-flex; align-items:center; gap:var(--space-3);
+            padding:var(--space-4) var(--space-6);
+            margin-top:var(--space-24);
+            background: var(--color-gold-muted);
+            color:var(--color-gold);
+            border-bottom:2px solid rgba(198,167,105,.25);
+            font-family:var(--font-sans); font-size:var(--text-xs);
+            font-weight:500; letter-spacing:.2em; text-transform:uppercase;
+            border-radius:var(--radius-sm); cursor:pointer;
+            transition:border-color .3s ease, color .3s ease, background .3s ease;
+            text-decoration:none;
+        }
+        .success-btn-home-ghost:hover {
+            border-color:var(--color-gold);
+            background:var(--color-gold-muted);
+        }
+        .success-btn-home-ghost svg { width:14px; height:14px; flex-shrink:0; }
+
         @media(max-width:480px){
             .success-actions{flex-direction:column;align-items:center;gap:var(--space-3);}
             .success-btn{width:100%;max-width:320px;justify-content:center;}
+            .success-btn-home-ghost{
+                width:100%; max-width:320px; justify-content:center;
+                margin-top:var(--space-6);
+            }
         }
 
         /* ── Decorative / ornament ── */
@@ -744,6 +812,10 @@
                     <span>Send a Message</span>
                 </a>
             </div>
+            <a href="index.html" class="success-btn success-btn-home-ghost">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <span>Back to Lumière</span>
+            </a>
         </div>
 
         <!-- ═══════════ STEP 1: Experience ═══════════ -->
@@ -982,7 +1054,7 @@
                 <div class="summary-title">Booking Summary</div>
                 <div class="summary-grid" id="summaryGrid"></div>
                 <p class="summary-note" id="summaryNote">
-                    A confirmation will be sent to your email address. Our team will contact you within 2 hours to confirm your reservation.
+                    A confirmation mail will be sent to your email address.
                 </p>
             </div>
 
@@ -1207,8 +1279,12 @@ document.querySelectorAll('.experience-option').forEach(opt => {
             }
             document.getElementById('partyCount').textContent = bookingData.party;
 
-            // Clear date
+            // Clear date — dispatch 'change' so the custom date picker
+            // sees the external clear and resets its trigger label back
+            // to "Select a date". Without the dispatch, the picker's
+            // internal state stays stale and shows the previous date.
             bookingDateInput.value = '';
+            bookingDateInput.dispatchEvent(new Event('change', { bubbles: true }));
             bookingData.date = '';
 
             // Clear time
@@ -1246,11 +1322,12 @@ function adjustParty(change) {
 
     let min, max;
     if (isPrivate) {
-        min = 1; max = 50;
+        min = 1; max = 24;
     } else if (isAlacarte) {
         min = 1; max = 6;
     } else {
-        min = 1; max = 20;
+        // Chef's Tasting Menu + Wine Pairing Journey
+        min = 1; max = 12;
     }
 
     const prevVal = bookingData.party;
@@ -1707,7 +1784,7 @@ function showStepLoader(callback) {
     document.getElementById('stepsIndicator').style.opacity = '0.3';
     document.getElementById('contactAlternative').style.display = 'none';
     document.getElementById('stepLoader').classList.add('visible');
-    document.getElementById('stepLoader').scrollIntoView({ behavior:'smooth', block:'center' });
+    document.getElementById('stepLoader').scrollIntoView({ behavior:'smooth', block:'start' });
 
     setTimeout(() => {
         document.getElementById('stepLoader').classList.remove('visible');
@@ -1749,7 +1826,7 @@ function goToStep(step) {
             reminder.classList.remove('visible');
             confirmBtnText.textContent = 'Confirm Reservation';
             confirmBtnIcon.innerHTML = '<path d="M20 6L9 17l-5-5"/>';
-            summaryNote.textContent = 'A confirmation will be sent to your email address. Our team will contact you within 2 hours to confirm your reservation.';
+            summaryNote.textContent = 'A confirmation mail will be sent to your email address.';
         }
     }
 
@@ -1996,15 +2073,21 @@ function showSuccessState(fd, ft) {
     const waMsg = encodeURIComponent(`Hi Lumière, I have a question about my reservation.\nBooking ID: ${bookingData.bookingId}\nName: ${bookingData.firstName} ${bookingData.lastName}\nDate: ${fd} at ${ft}`);
     document.getElementById('whatsappBtn').href = `https://wa.me/${WHATSAPP_NUMBER}?text=${waMsg}`;
 
-    document.getElementById('successState').classList.add('visible');
-
-    // Force scroll to top so the page opens cleanly under the navbar with
-    // no .scrolled state. Disable browser scroll restoration too so refresh
-    // and back-navigation also land at the top.
+    // Force scroll to top BEFORE revealing the success state so the user
+    // sees the reveal animation play from the top of the viewport.
     if ('scrollRestoration' in history) {
         history.scrollRestoration = 'manual';
     }
     window.scrollTo(0, 0);
+
+    // Two-step reveal: first display: block (still opacity 0 + below),
+    // then on the next frame add .visible so the transition animates
+    // from the starting state instead of skipping it.
+    const successEl = document.getElementById('successState');
+    successEl.style.display = 'block';
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => successEl.classList.add('visible'));
+    });
 }
 
 // ── Cancel / Modify navigation ───────────────────────────────
